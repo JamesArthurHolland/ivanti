@@ -1,0 +1,326 @@
+---
+project: ozone-test
+context:
+    default: local
+    list:
+      - local
+      - pull-request
+      - release-pr
+      - dev
+      - staging
+      - live
+
+build_vars:
+  HOME: "{{HOME}}"
+  LOCAL_CONTEXT: 'local'
+  LIVE_CONTEXT: 'live'
+  CONTAINER_DB_CONTEXTS: 'local|pull-request'
+  NONLIVE_CONTEXTS: 'pull-request|dev|release-pr'
+  NS_CONTEXTS: 'pull-request|dev|live|release-pr|tagging'
+  DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
+  ENV: '{{ENV | default_if_none:"local"}}'
+  DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ivantiregistry.local'}}"
+  PRODUCT_OVERALL_VERSION: "{{PRODUCT_OVERALL_VERSION}}"
+  SSL_ENABLED: '{{SSL_ENABLED | default_if_none:"false"}}'
+  SSL_PRIVATE_KEY64: "{{SSL_PRIVATE_KEY64}}"
+  ROOT_DIR: ./
+  PROJECTS_DIR: ./projects
+  GIT_BRANCH: "{{GIT_BRANCH}}"
+  API_DIR: "./projects/api"
+  API_SOURCE_FILES:
+  - "{{API_DIR}}/**"
+  services:
+    - api
+environments:
+  - name: local
+    include:
+      - name: all-docker-tags-latest
+    with_vars:
+      SUBDOMAIN: ""
+      HELM_INSTALL_NAME: "ivanti"
+      NAMESPACE: "ivanti"
+      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
+      API_HOST: 'api.ivanti.local'
+      KUBECONFIG: '{{HOME}}/.kube/ivanti-config'
+
+  - name: docker-tag-latest
+    with_vars:
+      DOCKER_FULL_TAG: "{{DOCKER_REGISTRY}}/{{SERVICE}}:latest"
+
+  - name: host_dynamic
+    with_vars:
+      API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
+      AUTH_HOST: "{{NAMESPACE}}-auth.{{DOMAIN}}"
+      UI_HOST: "{{SUBDOMAIN}}{{DOMAIN}}"
+      KIBANA_HOST: "{{NAMESPACE}}-kb.{{DOMAIN}}"
+      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
+
+  - name: all-docker-tags-latest
+    for: service:services
+    include:
+      - name: docker-tag-latest
+    with_vars:
+      "{{service | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{service}}:latest"
+
+  - name: all-docker-tags-dynamic
+    for: SERVICE:services
+    include:
+      - name: env/git_log_hash
+        type: builtin
+        input_vars:
+          GIT_DIR: "{{PROJECTS_DIR}}/{{SERVICE}}"
+          GIT_SOURCE_FILES:
+            - "{{{{SERVICE | upper}}_SOURCE_FILES}}"
+    with_vars:
+      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{GIT_LOG_HASH}}"
+      "{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION": "{{LIVE_DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
+      "{{SERVICE | upper}}_SHORT_TAG": "{{GIT_LOG_HASH}}"
+
+  - name: all-docker-tags-static
+    for: SERVICE:services
+    with_vars:
+      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
+
+  - name: ns_git_branch_prefix
+    include:
+      - name: env/git_branch_ticket_number
+        type: builtin
+        with_vars:
+          DOMAIN: "{{DOMAIN}}"
+          GIT_BRANCH: "{{GIT_BRANCH}}"
+
+  - name: ns_git_branch_suffix
+    include:
+      - name: env/git_branch_release_version
+        type: builtin
+        with_vars:
+          DOMAIN: "{{DOMAIN}}"
+          GIT_BRANCH: "{{GIT_BRANCH}}"
+
+  - name: ns_static
+    with_vars:
+      NAMESPACE: "{{ENV}}"
+      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
+      UI_HOST: "{{DOMAIN}}"
+
+  - name: short-tag-dynamic
+    with_vars:
+      DOCKER_CONTAINER_VERSION_TAG: "{{{{SERVICE | upper}}_SHORT_TAG}}"
+
+  - name: pull-request
+    include:
+      - name: ns_git_branch_prefix
+      - name: all-docker-tags-dynamic
+      - name: host_dynamic
+    with_vars:
+      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
+      ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/values-istio-pr.yaml"
+
+  - name: release-pr
+    include:
+      - name: ns_git_branch_suffix
+      - name: all-docker-tags-dynamic
+      - name: host_dynamic
+    with_vars:
+      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
+
+  - name: dev
+    include:
+      - name: ns_static
+
+  - name: live
+    include:
+      - name: ns_static
+      - name: all-docker-tags-static
+    with_vars:
+      SUBDOMAIN: ""
+      DOCKER_CONTAINER_VERSION_TAG: "{{PRODUCT_OVERALL_VERSION}}"
+
+  - name: host_docker_internal
+    with_vars:
+      HOST_DOCKER_INTERNAL_FULL: "--add-host host.docker.internal:host-gateway"
+      HOST_DOCKER_INTERNAL: "{{ HOST_DOCKER_INTERNAL_FULL | default_if_none:''}}"
+
+pre_utilities:
+  - name: install-docker-registry
+    context_steps:
+      - context: "{{LOCAL_CONTEXT}}"
+        steps:
+          - type: builtin
+            name: bashScript
+            with_vars:
+              SCRIPT: script_dev/add_local_docker_registry.sh
+
+  - name: create-namespace
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: script/create_namespace.sh
+
+  - name: install-nginx-controller
+    context_steps:
+      - context: "{{CONTEXT}}"
+        steps:
+          - type: builtin
+            name: bashScript
+            with_vars:
+              SCRIPT: script/install_nginx_controller.sh
+
+
+  - name: install-infrastructure-dependencies
+    depends_on:
+      - name: create-namespace
+      - name: install-helm-chart-dependencies
+
+builds:
+  - name: build-microservice-any
+    context_envs:
+      - context: "{{NS_CONTEXTS}}"
+        with_env:
+          - short-tag-dynamic
+    context_conditionals:
+      - context: "{{NS_CONTEXTS}}"
+        when_not_script:
+          - script/aws_ecr_has_container.sh
+    context_steps:
+      - context: "{{CONTEXT}}"
+        steps:
+          - type: builtin
+            name: buildDockerImage
+            with_vars:
+              DOCKER_BUILD_ARGS: "{{DOCKER_BUILD_ARGS}}"
+      - context: "local|{{NS_CONTEXTS}}"
+        steps:
+          - type: builtin
+            name: pushDockerImage
+
+
+  - name: build-generic-go
+    depends_on:
+      - name: build-microservice-any
+        with_vars:
+          DOCKER_FULL_TAG: "{{{{SERVICE | upper}}_FULL_TAG}}"
+          DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
+          DOCKER_BUILD_ARGS: "--progress=plain"
+          REPO: "{{SERVICE}}"
+
+  - name: build-api
+    cache: true
+    service: api
+    dir: "{{API_DIR}}"
+    DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
+    source_files:
+      - "{{API_SOURCE_FILES}}"
+    depends_on:
+      - name: build-generic-go
+        with_vars:
+          DOCKER_BUILD_DIR: "projects/api"
+
+  - name: build-all
+    cache: true
+    depends_on:
+      - name: build-api
+
+  - name: tag-through-dynamic-to-static
+    context_conditionals:
+      - context: "{{CONTEXT}}"
+        when_not_script:
+          - script/aws_ecr_has_container.sh # In future it should check that the product version tagged container exists, because otherwise weird deadlock can happen
+    context_steps:
+      - context: "{{NS_CONTEXTS}}"
+        steps:
+          - type: builtin
+            name: tagDockerImageAs
+            with_vars:
+              SOURCE_TAG: "{{{{SERVICE | upper}}_FULL_TAG}}"
+              TARGET_TAG: "{{{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION}}"
+          - type: builtin
+            name: pushDockerImage
+            with_vars:
+              DOCKER_FULL_TAG: "{{{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION}}"
+
+deploys:
+  - name: deploy-all
+    context_steps:
+      - context: "{{CONTEXT}}"
+        steps:
+          - name: helm
+            type: builtin
+            with_vars:
+              HELM_CHART: "./deployment/helm/ivanti"
+              HELM_ARGS:
+                  - "-n {{NAMESPACE}}"
+                  - "-f ./deployment/helm/ivanti/values.yaml"
+                  - "--set env={{ENV}}"
+                  - "--set domain={{DOMAIN}}"
+                  - "--set namespace={{NAMESPACE}}"
+                  - "--set-string ssl.enabled='{{SSL_ENABLED}}'"
+                  - "--set services.api.host={{API_HOST}}"
+              INSTALL_NAME: "{{HELM_INSTALL_NAME}}"
+
+  - name: teardown
+    context_steps:
+      - context: "{{CONTEXT}}"
+        steps:
+          - type: builtin
+            name: bashScript
+            with_vars:
+              SCRIPT: script/teardown_namespace.sh
+
+tests:
+  - name: postman-tests
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: script/run_e2e_tests.sh
+
+pipelines:
+  - name: install-build-deploy-local
+    depends_on:
+      - name: install-infrastructure-dependencies
+      - name: build-all
+      - name: deploy-all
+
+  - name: build-deploy-all
+    depends_on:
+      - name: build-all
+      - name: deploy-all
+
+  - name: deploy-local
+    depends_on:
+      - name: install-k8s-secret-env
+      - name: deploy-all
+
+  - name: deploy-dev
+    depends_on:
+      - name: install-infrastructure-dependencies
+      - name: deploy-all
+        with_vars:
+          SUBDOMAIN: "dev."
+
+  - name: deploy-prod
+    depends_on:
+      - name: install-infrastructure-dependencies
+      - name: deploy-all
+        with_vars:
+          CONFIGMAP_FILENAME: "live-env-configmap.yaml"
+          SUBDOMAIN: ""
+          DOMAIN: "ivanti.com"
+          API_HOST: "api.{{DOMAIN}}"
+
+  - name: deploy-staging
+    depends_on:
+      - name: install-infrastructure-dependencies
+      - name: deploy-all
+        with_vars:
+          CONFIGMAP_FILENAME: "live-env-configmap.yaml"
+          SUBDOMAIN: ""
+          DOMAIN: "staging.ivanti.com"
+          API_HOST: "api.{{DOMAIN}}"
+
+  - name: deploy-pr
+    depends_on:
+      - name: install-infrastructure-dependencies
+      - name: deploy-all
