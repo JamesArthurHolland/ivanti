@@ -30,7 +30,7 @@ build_vars:
   API_SOURCE_FILES:
   - "{{API_DIR}}/**"
   services:
-    - api
+    - ivantiapi
 environments:
   - name: local
     include:
@@ -41,7 +41,7 @@ environments:
       NAMESPACE: "ivanti"
       CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
       API_HOST: 'api.ivanti.local'
-      KUBECONFIG: '{{HOME}}/.kube/ivanti-config'
+      KUBECONFIG: '{{HOME}}/.kube/config'
 
   - name: docker-tag-latest
     with_vars:
@@ -168,10 +168,20 @@ pre_utilities:
               SCRIPT: script/install_nginx_controller.sh
 
 
+  - name: install-istio
+    context_steps:
+      - context: "{{CONTEXT}}"
+        steps:
+          - type: builtin
+            name: bashScript
+            with_vars:
+              SCRIPT: script/install_istio.sh
+
   - name: install-infrastructure-dependencies
     depends_on:
       - name: create-namespace
-      - name: install-helm-chart-dependencies
+      - name: install-istio
+      - name: install-docker-registry
 
 builds:
   - name: build-microservice-any
@@ -207,7 +217,7 @@ builds:
 
   - name: build-api
     cache: true
-    service: api
+    service: ivantiapi
     dir: "{{API_DIR}}"
     DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
     source_files:
@@ -221,24 +231,6 @@ builds:
     cache: true
     depends_on:
       - name: build-api
-
-  - name: tag-through-dynamic-to-static
-    context_conditionals:
-      - context: "{{CONTEXT}}"
-        when_not_script:
-          - script/aws_ecr_has_container.sh # In future it should check that the product version tagged container exists, because otherwise weird deadlock can happen
-    context_steps:
-      - context: "{{NS_CONTEXTS}}"
-        steps:
-          - type: builtin
-            name: tagDockerImageAs
-            with_vars:
-              SOURCE_TAG: "{{{{SERVICE | upper}}_FULL_TAG}}"
-              TARGET_TAG: "{{{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION}}"
-          - type: builtin
-            name: pushDockerImage
-            with_vars:
-              DOCKER_FULL_TAG: "{{{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION}}"
 
 deploys:
   - name: deploy-all
@@ -257,16 +249,17 @@ deploys:
                   - "--set namespace={{NAMESPACE}}"
                   - "--set-string ssl.enabled='{{SSL_ENABLED}}'"
                   - "--set services.api.host={{API_HOST}}"
+                  - "--set services.api.full_tag={{IVANTIAPI_FULL_TAG}}"
               INSTALL_NAME: "{{HELM_INSTALL_NAME}}"
 
   - name: teardown
     context_steps:
       - context: "{{CONTEXT}}"
         steps:
-          - type: builtin
-            name: bashScript
-            with_vars:
-              SCRIPT: script/teardown_namespace.sh
+         - type: builtin
+           name: bashScript
+           with_vars:
+             SCRIPT: script/teardown_namespace.sh
 
 tests:
   - name: postman-tests
@@ -277,7 +270,7 @@ tests:
           SCRIPT: script/run_e2e_tests.sh
 
 pipelines:
-  - name: install-build-deploy-local
+  - name: install-build-deploy-all
     depends_on:
       - name: install-infrastructure-dependencies
       - name: build-all
@@ -290,7 +283,6 @@ pipelines:
 
   - name: deploy-local
     depends_on:
-      - name: install-k8s-secret-env
       - name: deploy-all
 
   - name: deploy-dev
