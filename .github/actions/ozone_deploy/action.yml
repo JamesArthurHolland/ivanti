@@ -1,9 +1,6 @@
 name: 'Deploy'
 description: 'Builds containers, pushes them to docker repo, tests with postman/newman'
 inputs:
-  docker_registry_id:
-    description: 'Docker registry id'
-    required: true
   domain:
     description: 'Domain'
     required: true

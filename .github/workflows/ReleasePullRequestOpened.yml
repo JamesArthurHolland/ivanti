@@ -8,16 +8,10 @@ jobs:
   build_all:
     name: Build all
     uses: ./.github/workflows/build.yml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-      GH_PAT: ${{ secrets.GH_PAT }}
     with:
       ozone_context: release-pr
-      docker_registry_id: 624086393560
       env: "pr"
       is_release_version: false # change to is_semantic_versioned_release
-      github_username: vessul-cicd
       ozone_version: 1.4.33
 
   deploy_all:

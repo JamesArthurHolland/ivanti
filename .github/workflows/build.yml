@@ -32,11 +32,8 @@ jobs:
         with:
           ozone_context: ${{ inputs.ozone_context }}
           ozone_version: ${{ inputs.ozone_version }}
-          docker_registry_id: ${{ inputs.docker_registry_id }}
           service_name: api
           is_release_version: ${{ inputs.is_release_version }}
           env: ${{ inputs.env }}
-          gh_pat: ${{ secrets.GH_PAT }}
-          github_username: ${{ inputs.github_username }}
 
 

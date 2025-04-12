@@ -14,7 +14,6 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
       ozone_context: dev
-      docker_registry_id: 624086393560
       env: "dev"
       is_release_version: false
       github_username: vessul-cicd
@@ -32,8 +31,6 @@ jobs:
       LIVE_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
-      docker_registry_id: 624086393560
-      live_docker_registry_id: 536307352280
       env: "dev"
       ozone_version: 1.4.33
 
