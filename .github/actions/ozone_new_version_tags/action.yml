@@ -43,6 +43,7 @@ runs:
       uses: ./.github/actions/install-build-deps
       with:
         ozone-version: ${{ inputs.ozone_version }}
+        kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
     - name: Configure aws - for live
       uses: aws-actions/configure-aws-credentials@v1

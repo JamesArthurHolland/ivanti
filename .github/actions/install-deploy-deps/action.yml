@@ -19,7 +19,7 @@ runs:
         curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
     - name: "Install kubectl"
-      uses: azure/setup-kubectl@v3
+      uses: azure/setup-kubectl@v4
       with:
         version: 'v1.25.0'
 
