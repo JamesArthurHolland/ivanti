@@ -43,8 +43,17 @@ environments:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
       NAMESPACE: "ivanti"
-      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
       API_HOST: 'api.ivanti.local'
+      KUBECONFIG: '{{HOME}}/.kube/config'
+
+  - name: live
+    include:
+      - name: version-1
+    with_vars:
+      SUBDOMAIN: ""
+      HELM_INSTALL_NAME: "ivanti"
+      NAMESPACE: "ivanti"
+      API_HOST: 'api.ivanti.com'
       KUBECONFIG: '{{HOME}}/.kube/config'
 
   - name: docker-tag-latest
@@ -56,12 +65,12 @@ environments:
       API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
       HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
 
-  - name: all-docker-tags-latest
+  - name: version-1
     for: service:services
     include:
       - name: docker-tag-latest
     with_vars:
-      "{{service | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{service}}:latest"
+      "{{service | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{service}}:1.0"
 
   - name: all-docker-tags-dynamic
     for: SERVICE:services
@@ -287,7 +296,6 @@ pipelines:
       - name: install-infrastructure-dependencies
       - name: deploy-all
         with_vars:
-          CONFIGMAP_FILENAME: "live-env-configmap.yaml"
           SUBDOMAIN: ""
           DOMAIN: "ivanti.com"
           API_HOST: "api.{{DOMAIN}}"
