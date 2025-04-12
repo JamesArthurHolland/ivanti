@@ -35,7 +35,6 @@ build_vars:
   POSTGRES_DIR: "./projects/psql"
   services:
     - api
-    - counter
 environments:
   - name: local
     include:
@@ -219,42 +218,10 @@ builds:
         with_vars:
           DOCKER_BUILD_DIR: "projects/api"
 
-  - name: build-counter
-    cache: true
-    service: counter
-    dir: "{{COUNTER_DIR}}"
-    DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
-    source_files:
-      - "{{COUNTER_SOURCE_FILES}}"
-    depends_on:
-      - name: build-generic-go
-        with_vars:
-          DOCKER_BUILD_DIR: "projects/counter"
-
-  - name: build-db
-    cache: true
-    service: db
-    source_files:
-      - "{{POSTGRES_DIR}}"
-    dir: "{{POSTGRES_DIR}}"
-    context_conditionals:
-      - context: "pull_request"
-    context_steps:
-      - context: "{{CONTAINER_DB_CONTEXTS}}"
-        steps:
-          - type: builtin
-            name: buildDockerImage
-            with_vars:
-              DOCKERFILE: "{{POSTGRES_DIR}}/Dockerfile"
-          - type: builtin
-            name: pushDockerImage
-
   - name: build-all
     cache: true
     depends_on:
       - name: build-api
-      - name: build-counter
-      - name: build-db
 
 deploys:
   - name: deploy-all
@@ -271,9 +238,8 @@ deploys:
                   - "--set env={{ENV}}"
                   - "--set domain={{DOMAIN}}"
                   - "--set namespace={{NAMESPACE}}"
-                  - "--set-string ssl.enabled='{{SSL_ENABLED}}'"
                   - "--set services.api.host={{API_HOST}}"
-                  - "--set services.api.full_tag={{IVANTIAPI_FULL_TAG}}"
+                  - "--set services.api.full_tag={{API_FULL_TAG}}"
               INSTALL_NAME: "{{HELM_INSTALL_NAME}}"
 
   - name: teardown
