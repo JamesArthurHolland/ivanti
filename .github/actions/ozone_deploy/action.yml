@@ -22,18 +22,6 @@ inputs:
   infisical_backend_path:
     description: 'Infisical path'
     required: true
-  infisical_frontend_path:
-    description: 'Infisical path'
-    required: true
-  infisical_token_backend:
-    description: 'Infisical backend token'
-    required: true
-  infisical_token_frontend:
-    description: 'Infisical frontend token'
-    required: true
-  infisical_env:
-    description: 'Infisical environment'
-    required: true
   ozone_context:
     description: 'Ozone context'
     required: true
@@ -92,11 +80,6 @@ runs:
         GITHUB_USERNAME: ${{ inputs.github_username }}
         DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
         DOCKER_BUILDKIT: "1"
-        INFISICAL_ENV: "${{ inputs.infisical_env  }}"
-        INFISICAL_FRONTEND_PATH: "${{ inputs.infisical_frontend_path }}"
-        INFISICAL_BACKEND_PATH: "${{ inputs.infisical_backend_path }}"
-        INFISICAL_TOKEN_BACKEND: "${{ inputs.infisical_token_backend }}"
-        INFISICAL_TOKEN_FRONTEND: "${{ inputs.infisical_token_frontend }}"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
         SSL_ENABLED: "true" # TODO move this into ozone
@@ -120,11 +103,6 @@ runs:
         DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
         DOCKER_CONTAINER_VERSION_TAG: ${{ steps.version.outputs.semantic_version_from_git_log }} # wrong I think?
         DOCKER_BUILDKIT: "1"
-        INFISICAL_ENV: "${{ inputs.infisical_env  }}"
-        INFISICAL_BACKEND_PATH: "${{ inputs.infisical_backend_path }}"
-        INFISICAL_FRONTEND_PATH: "${{ inputs.infisical_frontend_path }}"
-        INFISICAL_TOKEN_BACKEND: "${{ inputs.infisical_token_backend }}"
-        INFISICAL_TOKEN_FRONTEND: "${{ inputs.infisical_token_frontend }}"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
         SSL_ENABLED: "true" # TODO move this into ozone
@@ -147,11 +125,6 @@ runs:
         DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
         PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
         DOCKER_BUILDKIT: "1"
-        INFISICAL_ENV: "${{ inputs.infisical_env }}"
-        INFISICAL_BACKEND_PATH: "${{ inputs.infisical_backend_path }}"
-        INFISICAL_FRONTEND_PATH: "${{ inputs.infisical_frontend_path }}"
-        INFISICAL_TOKEN_BACKEND: "${{ inputs.infisical_token_backend }}"
-        INFISICAL_TOKEN_FRONTEND: "${{ inputs.infisical_token_frontend }}"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
         SSL_ENABLED: "true" # TODO move this into ozone
@@ -174,11 +147,6 @@ runs:
         DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
         PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
         DOCKER_BUILDKIT: "1" # TODO move this into ozone
-        INFISICAL_ENV: "${{ inputs.infisical_env  }}"
-        INFISICAL_BACKEND_PATH: "${{ inputs.infisical_backend_path }}"
-        INFISICAL_FRONTEND_PATH: "${{ inputs.infisical_frontend_path }}"
-        INFISICAL_TOKEN_BACKEND: "${{ inputs.infisical_token_backend }}"
-        INFISICAL_TOKEN_FRONTEND: "${{ inputs.infisical_token_frontend }}"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
         SSL_ENABLED: "true" # TODO move this into ozone

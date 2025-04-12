@@ -17,10 +17,6 @@ on:
       github_username:
         required: true
         type: string
-    secrets:
-      GH_PAT:
-        description: "Github pattern access token"
-        required: true
 
 
 jobs:
@@ -31,7 +27,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
       - uses: ./.github/actions/ozone_build
         with:

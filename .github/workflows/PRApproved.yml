@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          token: ${{ secrets.MODULE_TOKEN }}
           fetch-depth: 0
       - name: Fetch All Submodule Branches
         run: git submodule foreach 'git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" && git fetch origin'

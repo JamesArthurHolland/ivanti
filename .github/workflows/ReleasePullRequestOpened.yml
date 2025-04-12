@@ -29,7 +29,6 @@ jobs:
       - uses: actions/checkout@v3.5.2
         with:
           submodules: recursive
-          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
@@ -47,11 +46,6 @@ jobs:
           docker_registry_id: 624086393560
           domain: "pr.vessul.atpi.com"
           env: "dev"
-          infisical_env: "dev"
-          infisical_backend_path: "/"
-          infisical_frontend_path: "/"
-          infisical_token_backend: ${{ secrets.INFISICAL_TOKEN_BACKEND_DEV }}
-          infisical_token_frontend: ${{ secrets.INFISICAL_TOKEN_FRONTEND_DEV }}
           is_release_version: false
           ozone_context: release-pr
           ozone_runnable: deploy-pr
