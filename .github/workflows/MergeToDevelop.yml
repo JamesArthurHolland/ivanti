@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/actions/install-deploy-deps
         with:
           ozone-version: 1.4.33
-          kube_config: ${{ secrets.KUBE_CONFIG }}
+          kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
       - name: Login to Amazon ECR
         id: login-ecr
