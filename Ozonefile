@@ -31,6 +31,8 @@ build_vars:
   COUNTER_SOURCE_FILES:
   - "{{COUNTER_DIR}}/**"
   POSTGRES_DIR: "./projects/psql"
+  services:
+    - api
 environments:
   - name: local
     include:
