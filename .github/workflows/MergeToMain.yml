@@ -20,7 +20,6 @@ jobs:
           ozone-version: 1.4.33
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
-
       - name: Get version
         id: version
         uses: ./.github/actions/get-version
