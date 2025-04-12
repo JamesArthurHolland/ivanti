@@ -21,10 +21,6 @@ runs:
         ozone-version: ${{ inputs.ozone_version }}
         kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
-
-
-
-
     - name: Get version
       id: version
       uses: ./.github/actions/get-version
