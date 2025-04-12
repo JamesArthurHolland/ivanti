@@ -33,12 +33,8 @@ runs:
     - name: Install deps
       uses: ./.github/actions/install-deploy-deps
       with:
-        aws_account_name: ${{ inputs.aws_account_name }}
-        aws_account: ${{ inputs.aws_account }}
-        aws_region: ${{ inputs.aws_region }}
-        aws_access_key_id: ${{ inputs.aws_access_key_id }}
-        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
         ozone-version: ${{ inputs.ozone_version }}
+        kube_config: ${{ secrets.KUBE_CONFIG }}
 
     - name: Get version
       if: inputs.is_release_version == 'true'

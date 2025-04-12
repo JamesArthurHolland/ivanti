@@ -51,12 +51,8 @@ jobs:
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
-          aws_account_name: dev
-          aws_account: 624086393560
-          aws_region: eu-west-1
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           ozone-version: 1.4.33
+          kube_config: ${{ secrets.KUBE_CONFIG }}
 
       - name: Login to Amazon ECR
         id: login-ecr

@@ -4,6 +4,9 @@ inputs:
   ozone-version:
     description: 'Ozone version'
     required: true
+  kube_config:
+    description: 'Kube config'
+    required: true
 
 runs:
   using: "composite"
@@ -37,7 +40,7 @@ runs:
       uses: Azure/k8s-set-context@v1
       with:
         method: kubeconfig
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        kubeconfig: ${{ inputs.KUBE_CONFIG }}
 
     - name: "Setup istioctl"
       uses: zufardhiyaulhaq/setup-istioctl@v1.0.0

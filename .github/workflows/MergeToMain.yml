@@ -17,6 +17,8 @@ jobs:
         uses: ./.github/actions/install-deploy-deps
         with:
           ozone-version: 1.4.33
+          kube_config: ${{ secrets.KUBE_CONFIG }}
+
 
       - name: Get version
         id: version
