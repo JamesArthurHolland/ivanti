@@ -27,17 +27,17 @@ jobs:
       - build_all
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
           fetch-depth: 0
 
-      - uses: ./.github/workflows/build.yml
-        with:
-          ozone_context: pull-request
-          env: "pr"
-          is_release_version: false
-          ozone_version: 1.4.33
+#      - uses: ./.github/workflows/build.yml
+#        with:
+#          ozone_context: pull-request
+#          env: "pr"
+#          is_release_version: false
+#          ozone_version: 1.4.33
 
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps

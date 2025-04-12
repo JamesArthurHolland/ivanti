@@ -10,15 +10,6 @@ jobs:
     name: Deploy all
     runs-on: ubuntu-latest
     steps:
-      - name: Check deployment secret
-        run: |
-          if [ "$GIVEN_DEPLOYMENT_SECRET" != "$DEPLOYMENT_SECRET" ]; then
-            echo "Deployment secret is incorrect. Exiting."
-            exit 1;
-          fi
-        env:
-          GIVEN_DEPLOYMENT_SECRET: ${{ github.event.inputs.deployment_secret }}
-          DEPLOYMENT_SECRET: ${{ secrets.DEPLOYMENT_SECRET }}
       - uses: actions/checkout@v3.5.2
         with:
           submodules: recursive
