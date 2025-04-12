@@ -33,7 +33,8 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - "oneregistry.local"
+        - "*.$DOMAIN"
+        - "$DOMAIN"
 END
 
 kubectl apply -n docker-registry -f - <<END
@@ -43,7 +44,7 @@ metadata:
   name: docker-registry-ivanti-virtualservice
 spec:
   hosts:
-    - oneregistry.local
+    - ivanti.local
   gateways:
     - istio-system/docker-registry-ivanti-gateway-local
   http:

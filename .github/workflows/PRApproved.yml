@@ -1,0 +1,46 @@
+name: PR Approval
+on:
+  pull_request_review:
+    types: [submitted]
+jobs:
+  validate_submodule_commits:
+    name: Validate Submodule Commits
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.MODULE_TOKEN }}
+          fetch-depth: 0
+      - name: Fetch All Submodule Branches
+        run: git submodule foreach 'git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" && git fetch origin'
+      - name: Cache Go modules
+        id: cache-go-modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Setup Go environment
+        if: steps.cache-go-modules.outputs.cache-hit != 'true'
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: Download Go modules
+        if: steps.cache-go-modules.outputs.cache-hit != 'true'
+        env:
+          MODULE_TOKEN: ${{ secrets.MODULE_TOKEN }}
+        run: |
+          git config --global url."https://${MODULE_TOKEN}@github.com".insteadOf "https://github.com"
+          go env -w GOPRIVATE="github.com/ATPIGroup/taptrip-*,github.com/taptripteam/*"
+          cd script_golang/cmd/commit_exists
+          go get
+      - name: Verify the commits
+        run: |
+          cd script_golang/cmd/commit_exists
+          go run main.go --branch-name=${{ github.event.pull_request.base.ref }}

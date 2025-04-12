@@ -1,0 +1,56 @@
+name: Deploy to prod
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_secret:
+        description: 'Deployment secret'
+        required: true
+jobs:
+  deploy_all:
+    name: Deploy all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployment secret
+        run: |
+          if [ "$GIVEN_DEPLOYMENT_SECRET" != "$DEPLOYMENT_SECRET" ]; then
+            echo "Deployment secret is incorrect. Exiting."
+            exit 1;
+          fi
+        env:
+          GIVEN_DEPLOYMENT_SECRET: ${{ github.event.inputs.deployment_secret }}
+          DEPLOYMENT_SECRET: ${{ secrets.DEPLOYMENT_SECRET }}
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          aws_account_name: live
+          aws_account: 536307352280
+          aws_region: eu-west-1
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          ozone-version: 1.4.33
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 536307352280
+
+      - name: Get version
+        id: version
+        uses: ./.github/actions/get-version
+        with:
+          env: production
+
+      - name: "Deploy to production"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && infisical run --env=prod --path=/ -- ozone -d -c live run deploy-prod
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_LIVE }}
+          PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?

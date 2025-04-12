@@ -15,6 +15,8 @@ type HealthMessage struct {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	containerType := os.Getenv("CONTAINER_TYPE")
+	w.Header().Set("Content-Type", "application/json") // Set the content type to JSON
+
 	if containerType == "" {
 		w.WriteHeader(http.StatusInternalServerError)
 		message := HealthMessage{
@@ -25,20 +27,20 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal("Could not marshal healthMessage")
 		}
-		fmt.Fprintln(w, messageBytes)
+		w.Write(messageBytes) // Return the error message
 
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 	message := HealthMessage{
-		OK:            false,
+		OK:            true, // Set to true when everything is okay
 		ContainerType: containerType,
 	}
 	messageBytes, err := json.Marshal(&message)
 	if err != nil {
 		log.Fatal("Could not marshal healthMessage")
 	}
-	fmt.Fprintln(w, messageBytes)
+	w.Write(messageBytes) // Return the success message
 
 	return
 }

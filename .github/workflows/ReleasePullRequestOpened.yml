@@ -1,0 +1,63 @@
+name: RELEASE Pull Request Opened / Committed to
+on:
+  pull_request:
+    branches:
+      - 'develop'
+
+jobs:
+  build_all:
+    name: Build all
+    uses: ./.github/workflows/build.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+    with:
+      ozone_context: release-pr
+      docker_registry_id: 624086393560
+      env: "pr"
+      is_release_version: false # change to is_semantic_versioned_release
+      github_username: vessul-cicd
+      ozone_version: 1.4.33
+
+  deploy_all:
+    name: Deploy all
+    needs:
+      - build_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          aws_account_name: dev
+          aws_account: 536307352280
+          aws_region: eu-west-1
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          ozone-version: 1.4.33
+      - uses: ./.github/actions/ozone_deploy
+        with:
+          cert_dir: "ingressgateway-certs"
+          db_host: "postgresql-dev.cm3xbbyiyhxk.eu-west-1.rds.amazonaws.com:5432"
+          docker_registry_id: 624086393560
+          domain: "pr.vessul.atpi.com"
+          env: "dev"
+          infisical_env: "dev"
+          infisical_backend_path: "/"
+          infisical_frontend_path: "/"
+          infisical_token_backend: ${{ secrets.INFISICAL_TOKEN_BACKEND_DEV }}
+          infisical_token_frontend: ${{ secrets.INFISICAL_TOKEN_FRONTEND_DEV }}
+          is_release_version: false
+          ozone_context: release-pr
+          ozone_runnable: deploy-pr
+          uses_container_db: false
+          ssl_private_key64: ${{ secrets.SSL_PR_PRIVATE_KEY64 }}
+          ssl_combined_cert64: ${{ secrets.SSL_PR_COMBINED_CERT64 }}
+          ssl_ca64: ${{ secrets.SSL_PR_CA64 }}
+          aws_account_name: dev
+          cluster_autoscaling_iam_role_arn: arn:aws:iam::624086393560:role/vessul-eks-dev-cluster-cluster-autoscaler

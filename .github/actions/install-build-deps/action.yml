@@ -1,0 +1,20 @@
+name: 'Install deps'
+description: 'Installs terraform, kubectl, newman'
+inputs:
+  ozone-version:
+    description: 'Ozone version'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: abbbi/github-actions-tune@v1
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: "Install ozone."
+      shell: bash
+      run: go install github.com/ozone2021/ozone/ozone@${{ inputs.ozone-version }}

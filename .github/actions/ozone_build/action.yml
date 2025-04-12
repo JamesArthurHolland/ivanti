@@ -1,0 +1,73 @@
+name: 'Build'
+description: 'Builds containers'
+inputs:
+  aws_access_key_id:
+    description: 'aws_access_key_id'
+    required: true
+  aws_secret_access_key:
+    description: 'aws_secret_access_key'
+    required: true
+  ozone_context:
+    description: 'Ozone context'
+    required: true
+  ozone_version:
+    description: 'Ozone version'
+    required: true
+  docker_registry_id:
+    description: 'Docker registry id'
+    required: true
+  env:
+    description: 'Environment'
+    required: true
+  service_name:
+    description: 'Service name.'
+    required: true
+  is_release_version:
+    description: 'Is release version'
+    required: true
+  github_username:
+    description: 'Github username of the cicd user'
+    required: true
+  gh_pat:
+    description: 'Github PAT of the cicd user'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Install dependencies
+    - name: Install deps
+      uses: ./.github/actions/install-build-deps
+      with:
+        ozone-version: ${{ inputs.ozone_version }}
+
+    - name: Get version
+      if: inputs.is_release_version == 'true'
+      id: version
+      uses: ./.github/actions/get-version
+      with:
+        env: ${{ inputs.env }}
+
+    - name: "Ozone - Build non-release."
+      if: inputs.is_release_version == 'false'
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run "build-${{ inputs.service_name }}"
+      env:
+        GIT_BRANCH: ${{ github.head_ref }}
+        GITHUB_USERNAME: ${{ inputs.github_username }}
+        GITHUB_TOKEN: ${{ inputs.gh_pat }}
+        DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+        DOCKER_BUILDKIT: "1"
+
+    - name: "Ozone - Build release."
+      if: inputs.is_release_version == 'true'
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run "build-${{ inputs.service_name }}"
+      env:
+        GIT_BRANCH: ${{ github.head_ref }}
+        GITHUB_USERNAME: ${{ inputs.github_username }}
+        GITHUB_TOKEN: ${{ inputs.gh_pat }}
+        DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+        LIVE_DOCKER_REGISTRY: "${{ inputs.live_docker_registry_id }}"
+        DOCKER_CONTAINER_VERSION_TAG: ${{ steps.version.outputs.semantic_version_from_git_log }}
+        DOCKER_BUILDKIT: "1"

@@ -1,0 +1,340 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      docker_registry_id:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      is_release_version:
+        required: true
+        type: boolean
+      ozone_context:
+        required: true
+        type: string
+      ozone_version:
+        required: true
+        type: string
+      github_username:
+        required: true
+        type: string
+    secrets:
+      GH_PAT:
+        description: "Github pattern access token"
+        required: true
+      AWS_ACCESS_KEY_ID:
+        description: "AWS credential"
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: "AWS credential"
+        required: true
+
+
+jobs:
+#  build_database:
+#    name: Build database
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          submodules: recursive
+#          token: ${{ secrets.GH_PAT }}
+#          fetch-depth: 0
+#      - uses: ./.github/actions/ozone_build
+#        with:
+#          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          ozone_context: pull-request
+#          docker_registry_id: ${{ inputs.docker_registry_id }}
+#          deployment_prefix: ${{ inputs.deployment_prefix }}
+#          service_name: database
+#          gh_pat: ${{ secrets.GH_PAT }}
+
+  build_api:
+    name: Build api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: api
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_booking:
+    name: Build booking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: booking
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_card:
+    name: Build card
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: card
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_eprofile:
+    name: Build eprofile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: eprofile
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_frogpoint:
+    name: Build frogpoint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: frogpoint
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_crewchange:
+    name: Build crewchange
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: crewchange
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_ticketwindow:
+    name: Build ticketwindow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: ticketwindow
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_migrator:
+    name: Build migrator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: migrator
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_trip:
+    name: Build trip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: trip
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_ui:
+    name: Build ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: ui
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_location_search:
+    name: Build locations search
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: locationsearch
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_location_batch:
+    name: Build locations batch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: locationbatch
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+
+  build_taptrip_elastic:
+    name: Build taptrip elastic
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_build
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ozone_context: ${{ inputs.ozone_context }}
+          ozone_version: ${{ inputs.ozone_version }}
+          docker_registry_id: ${{ inputs.docker_registry_id }}
+          service_name: taptrip_elastic
+          is_release_version: ${{ inputs.is_release_version }}
+          env: ${{ inputs.env }}
+          gh_pat: ${{ secrets.GH_PAT }}
+          github_username: ${{ inputs.github_username }}
+

@@ -1,0 +1,26 @@
+name: 'Get version'
+description: 'Gets version from merged branch name.'
+inputs:
+  env:
+    description: 'environment'
+    required: true
+outputs:
+  semantic_version_from_git_branchname:
+    description: "Sematic version from git branch name"
+    value: ${{ steps.git_log.outputs.semantic_version_from_git_branchname }}
+  semantic_version_from_git_tag:
+    description: "Sematic version from git tag"
+    value: ${{ steps.git_tag.outputs.semantic_version_from_git_tag }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Get version from merged git branch."
+      if: inputs.env == 'dev'
+      id: git_log
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && echo "::set-output name=semantic_version_from_git_branchname::$(./script/utils/version_from_branchname.sh)" && true
+    - name: "Get version from commit's TAG."
+      if: inputs.env == 'production' || inputs.env == 'staging'
+      id: git_tag
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && echo "::set-output name=semantic_version_from_git_tag::$(git describe --tags $(git rev-list --tags --max-count=1))" && true

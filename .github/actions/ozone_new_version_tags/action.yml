@@ -1,0 +1,88 @@
+name: 'Tag with new version tag'
+description: 'Retags a service with static version container tag, using the dynamic tag as the source.'
+inputs:
+  aws_access_key_id:
+    description: 'aws_access_key_id'
+    required: true
+  aws_secret_access_key:
+    description: 'aws_secret_access_key'
+    required: true
+  live_aws_access_key_id:
+    description: 'AWS creds'
+    required: true
+  live_aws_secret_access_key:
+    description: 'AWS creds'
+    required: true
+  live_docker_registry_id:
+    description: 'Live docker registry id - only for dev build, use docker_registry_id for live build'
+    required: false
+  aws_account:
+    description: 'AWS account'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: true
+  docker_registry_id:
+    description: 'Docker registry id'
+    required: true
+  env:
+    description: 'Environment name'
+    required: true
+  service_name:
+    description: 'Service name.'
+    required: true
+  ozone_version:
+    description: 'Ozone version'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Install dependencies
+    - name: Install deps
+      uses: ./.github/actions/install-build-deps
+      with:
+        ozone-version: ${{ inputs.ozone_version }}
+
+    - name: Configure aws - for live
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: eu-west-1
+        aws-access-key-id: ${{ inputs.live_aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.live_aws_secret_access_key }}
+
+    - name: Login to Live Amazon ECR
+      id: login-ecr-live
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ inputs.live_docker_registry_id }}
+
+    - name: Configure aws - for dev
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: eu-west-1
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr-dev
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ inputs.docker_registry_id }}
+
+    - name: Get version
+      id: version
+      uses: ./.github/actions/get-version
+      with:
+        env: ${{ inputs.env }}
+
+    - name: "Ozone - Retag."
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && ozone -d -c tagging run "tag-through-dynamic-to-static-${{ inputs.service_name}}"
+      env:
+        GIT_BRANCH: ${{ github.head_ref }}
+        GITHUB_USERNAME: ${{ inputs.github_username }}
+        DOCKER_REGISTRY: "${{ steps.login-ecr-dev.outputs.registry }}"
+        LIVE_DOCKER_REGISTRY: "${{ steps.login-ecr-live.outputs.registry }}"
+        DOCKER_BUILDKIT: "1"
+        PRODUCT_OVERALL_VERSION: "${{ steps.version.outputs.semantic_version_from_git_branchname }}"

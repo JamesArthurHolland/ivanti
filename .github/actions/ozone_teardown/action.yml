@@ -1,0 +1,55 @@
+name: 'Teardown'
+description: 'Builds containers, pushes them to docker repo, tests with postman/newman'
+inputs:
+  aws_access_key_id:
+    description: 'aws_access_key_id'
+    required: true
+  aws_secret_access_key:
+    description: 'aws_secret_access_key'
+    required: true
+  aws_account_name:
+    description: 'AWS account name'
+    required: true
+  aws_account:
+    description: 'AWS account'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: true
+  env:
+    description: 'Environment name'
+    required: true
+  ozone_context:
+    description: 'Ozone context'
+    required: true
+  ozone_version:
+    description: 'Ozone version'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Install dependencies
+    - name: Install deps
+      uses: ./.github/actions/install-deploy-deps
+      with:
+        aws_account_name: ${{ inputs.aws_account_name }}
+        aws_account: ${{ inputs.aws_account }}
+        aws_region: ${{ inputs.aws_region }}
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        ozone-version: ${{ inputs.ozone_version }}
+
+    - name: Get version
+      if: inputs.is_release_version == 'true'
+      id: version
+      uses: ./.github/actions/get-version
+      with:
+        env: ${{ inputs.env }}
+
+    - name: "Ozone - Teardown non-release."
+      shell: bash
+      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run teardown
+      env:
+        GIT_BRANCH: ${{ github.head_ref }}
+

@@ -1,0 +1,84 @@
+name: DEVELOP
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build_all:
+    name: Build all
+    uses: ./.github/workflows/build.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+    with:
+      ozone_context: dev
+      docker_registry_id: 624086393560
+      env: "dev"
+      is_release_version: false
+      github_username: vessul-cicd
+      ozone_version: 1.4.33
+
+  retag_all:
+    name: Tag all submodules with the parent semantic tag.
+    needs:
+      - build_all
+    uses: ./.github/workflows/retag_all.yml
+    secrets:
+      DEV_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+      DEV_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+      LIVE_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+      LIVE_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+    with:
+      docker_registry_id: 624086393560
+      live_docker_registry_id: 536307352280
+      env: "dev"
+      ozone_version: 1.4.33
+
+  deploy_all:
+    name: Deploy all
+    needs:
+      - build_all
+      - retag_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          aws_account_name: dev
+          aws_account: 624086393560
+          aws_region: eu-west-1
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          ozone-version: 1.4.33
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 624086393560
+
+      - name: "Ozone - Deploy to Dev"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && infisical run --env=dev --path=/ -- ozone -d -c dev run deploy-dev
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_DEV }}
+
+  git_tag:
+    name: Git Tag the parent repo.
+    needs:
+      - deploy_all
+    uses: ./.github/workflows/tag.yml
+    secrets: inherit
+    with:
+      env: "dev"
+

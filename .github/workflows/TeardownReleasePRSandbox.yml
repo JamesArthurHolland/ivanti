@@ -1,0 +1,27 @@
+name: Release Pull Request Closed/Merged
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'develop'
+
+jobs:
+  merge_pr:
+    name: Pull request merged
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - uses: ./.github/actions/ozone_teardown
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+          aws_account: 624086393560
+          aws_account_name: dev
+          aws_region: eu-west-1
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          env: "pr"
+          ozone_context: release-pr
+          ozone_version: 1.4.33

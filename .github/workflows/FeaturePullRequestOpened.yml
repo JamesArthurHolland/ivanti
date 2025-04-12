@@ -1,0 +1,75 @@
+name: FEATURE Pull Request Opened / Committed to
+on:
+  pull_request:
+    branches:
+      - 'release/**'
+      - 'FEAT-**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  login_docker_hub:
+    name: Login to Docker Hub
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
+  build_all:
+    name: Build all
+    needs:
+      - login_docker_hub
+    uses: ./.github/workflows/build.yml
+    with:
+      ozone_context: pull-request
+      env: "pr"
+      is_release_version: false
+      ozone_version: 1.4.33
+
+  deploy_all:
+    name: Deploy all
+    needs:
+      - build_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          ozone-version: 1.4.33
+
+      - name: "Ozone - Deploy Feature PR"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && infisical run --env=pr --path=/ -- ozone -d -c pull-request run deploy-pr
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}
+
+  tests:
+    name: Postman e2e Tests
+    needs:
+      - deploy_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-e2e-test-deps
+        with:
+          ozone-version: 1.2.34
+      - name: "Ozone - Postman tests"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && infisical run --env=pr --path=/ -- ozone -d -c pull-request run postman-tests
+        env:
+          GIT_BRANCH: ${{ github.head_ref }}
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}

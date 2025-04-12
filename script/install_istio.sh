@@ -38,46 +38,7 @@ kubectl apply -f - <<END
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: ivanti-gateway-$ENV
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-    - port:
-        number: 80
-        name: http
-        protocol: HTTP
-      hosts:
-        - "*.$DOMAIN"
-        - "$DOMAIN"
-      tls:
-        httpsRedirect: true
-    - port:
-        number: 443
-        name: https-443
-        protocol: HTTPS
-      hosts:
-        - "*.$DOMAIN"
-        - "$DOMAIN"
-      tls:
-        credentialName: $SECRET_NAME # this should match with Certificate secretName
-        mode: SIMPLE
-END
-
-echo "Apply redirect filter"
-
-else #### ----------------- SSL DISABLED ----------------- ####
-  echo "Installing istio with SSL disabled"
-
-  kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
-
-
-kubectl apply -f - <<END
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: ivanti-gateway-local
+  name: docker-registry-ivanti-gateway-local
   namespace: istio-system
 spec:
   selector:

@@ -1,0 +1,6 @@
+version: "1"
+packages:
+  - path: "internal/counter"
+    queries: "./sqlc/counter_queries.sql"
+    schema: "./sqlc/counter_schema.sql"
+    engine: "postgresql"

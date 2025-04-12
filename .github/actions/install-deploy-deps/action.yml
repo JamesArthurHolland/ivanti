@@ -1,0 +1,50 @@
+name: 'Install deps'
+description: 'Installs terraform, kubectl, newman'
+inputs:
+  ozone-version:
+    description: 'Ozone version'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: abbbi/github-actions-tune@v1
+
+    - name: "Add kubectl repo"
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y apt-transport-https coreutils gnupg2 jq openssl &&
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+    - name: "Install kubectl"
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.25.0'
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.23
+
+    - name: "Install ozone."
+      shell: bash
+      run: go install github.com/ozone2021/ozone/ozone@${{ inputs.ozone-version }}
+
+    - name: "Make kube directory"
+      shell: bash
+      run: mkdir $HOME/.kube
+
+    - name: Kubernetes set context
+      uses: Azure/k8s-set-context@v1
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: "Setup istioctl"
+      uses: zufardhiyaulhaq/setup-istioctl@v1.0.0
+      with:
+        version: "1.17.2"
+
+    - name: "Set kubeconfig"
+      shell: bash
+      run: echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+

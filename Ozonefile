@@ -19,7 +19,7 @@ build_vars:
   NS_CONTEXTS: 'pull-request|dev|live|release-pr|tagging'
   DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
   ENV: '{{ENV | default_if_none:"local"}}'
-  DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ivantiregistry.local'}}"
+  DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ozone2021/ivt-api'}}"
   PRODUCT_OVERALL_VERSION: "{{PRODUCT_OVERALL_VERSION}}"
   SSL_ENABLED: '{{SSL_ENABLED | default_if_none:"false"}}'
   SSL_PRIVATE_KEY64: "{{SSL_PRIVATE_KEY64}}"
@@ -29,8 +29,13 @@ build_vars:
   API_DIR: "./projects/api"
   API_SOURCE_FILES:
   - "{{API_DIR}}/**"
+  COUNTER_DIR: "./projects/counter"
+  COUNTER_SOURCE_FILES:
+  - "{{COUNTER_DIR}}/**"
+  POSTGRES_DIR: "./projects/psql"
   services:
-    - ivantiapi
+    - api
+    - counter
 environments:
   - name: local
     include:
@@ -50,9 +55,6 @@ environments:
   - name: host_dynamic
     with_vars:
       API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
-      AUTH_HOST: "{{NAMESPACE}}-auth.{{DOMAIN}}"
-      UI_HOST: "{{SUBDOMAIN}}{{DOMAIN}}"
-      KIBANA_HOST: "{{NAMESPACE}}-kb.{{DOMAIN}}"
       HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
 
   - name: all-docker-tags-latest
@@ -158,16 +160,6 @@ pre_utilities:
         with_vars:
           SCRIPT: script/create_namespace.sh
 
-  - name: install-nginx-controller
-    context_steps:
-      - context: "{{CONTEXT}}"
-        steps:
-          - type: builtin
-            name: bashScript
-            with_vars:
-              SCRIPT: script/install_nginx_controller.sh
-
-
   - name: install-istio
     context_steps:
       - context: "{{CONTEXT}}"
@@ -217,7 +209,7 @@ builds:
 
   - name: build-api
     cache: true
-    service: ivantiapi
+    service: api
     dir: "{{API_DIR}}"
     DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
     source_files:
@@ -227,10 +219,42 @@ builds:
         with_vars:
           DOCKER_BUILD_DIR: "projects/api"
 
+  - name: build-counter
+    cache: true
+    service: counter
+    dir: "{{COUNTER_DIR}}"
+    DOCKER_BUILD_DIR: "{{ROOT_DIR}}"
+    source_files:
+      - "{{COUNTER_SOURCE_FILES}}"
+    depends_on:
+      - name: build-generic-go
+        with_vars:
+          DOCKER_BUILD_DIR: "projects/counter"
+
+  - name: build-db
+    cache: true
+    service: db
+    source_files:
+      - "{{POSTGRES_DIR}}"
+    dir: "{{POSTGRES_DIR}}"
+    context_conditionals:
+      - context: "pull_request"
+    context_steps:
+      - context: "{{CONTAINER_DB_CONTEXTS}}"
+        steps:
+          - type: builtin
+            name: buildDockerImage
+            with_vars:
+              DOCKERFILE: "{{POSTGRES_DIR}}/Dockerfile"
+          - type: builtin
+            name: pushDockerImage
+
   - name: build-all
     cache: true
     depends_on:
       - name: build-api
+      - name: build-counter
+      - name: build-db
 
 deploys:
   - name: deploy-all

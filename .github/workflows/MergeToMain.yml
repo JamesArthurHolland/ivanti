@@ -1,0 +1,46 @@
+name: STAGING
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_all:
+    name: Deploy all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          aws_account_name: live
+          aws_account: 536307352280
+          aws_region: eu-west-1
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          ozone-version: 1.4.33
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 536307352280
+
+      - name: Get version
+        id: version
+        uses: ./.github/actions/get-version
+        with:
+          env: staging
+
+      - name: "Deploy to staging"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && infisical run --env=staging --path=/ -- ozone -d -c live run deploy-staging
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_STAGING }}
+          PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
