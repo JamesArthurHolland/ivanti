@@ -46,7 +46,7 @@ jobs:
 
       - name: "Ozone - Deploy Feature PR"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && infisical run --env=pr --path=/ -- ozone -d -c pull-request run deploy-pr
+        run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run deploy-pr
         env:
           DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_BRANCH: ${{ github.head_ref }}
@@ -67,7 +67,7 @@ jobs:
           ozone-version: 1.2.34
       - name: "Ozone - Postman tests"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && infisical run --env=pr --path=/ -- ozone -d -c pull-request run postman-tests
+        run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run postman-tests
         env:
           GIT_BRANCH: ${{ github.head_ref }}
           INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}

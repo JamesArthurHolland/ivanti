@@ -62,7 +62,7 @@ jobs:
 
       - name: "Ozone - Deploy to Dev"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && infisical run --env=dev --path=/ -- ozone -d -c dev run deploy-dev
+        run: cd $GITHUB_WORKSPACE && ozone -d -c dev run deploy-dev
         env:
           DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_BRANCH: ${{ github.head_ref }}

@@ -19,9 +19,6 @@ inputs:
   is_release_version:
     description: 'Is release version'
     required: true
-  infisical_backend_path:
-    description: 'Infisical path'
-    required: true
   ozone_context:
     description: 'Ozone context'
     required: true
