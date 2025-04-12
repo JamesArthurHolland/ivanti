@@ -47,10 +47,10 @@ jobs:
 
       - name: "Ozone - Deploy Feature PR"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run deploy-pr
+        run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run deploy-pr; EXPORT GIT_BRANCH=$(./script/utils/dynamic_namespace.sh)
         env:
           DOCKER_REGISTRY: ozone2021
-          GIT_BRANCH: ${{ github.head_ref }}
+#          GIT_BRANCH: ${{ github.head_ref }}
           DOMAIN: "ivanti.com"
 
   tests:
