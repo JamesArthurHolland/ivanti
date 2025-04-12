@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: nginx
+  repository: ivanti
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -54,7 +54,7 @@ ingress:
       backend:
         serviceName: ivanti-registry
         servicePort: 80
-    - host: ivanti-api.local
+    - host: ivanti-api.test
       paths:
         - path: /
           pathType: ImplementationSpecific

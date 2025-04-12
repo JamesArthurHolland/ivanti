@@ -51,6 +51,7 @@ spec:
       hosts:
         - "*.$DOMAIN"
         - "$DOMAIN"
+        - ivanti.test
 END
 fi
 

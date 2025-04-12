@@ -51,6 +51,7 @@ jobs:
         env:
           DOCKER_REGISTRY: ozone2021
           GIT_BRANCH: ${{ github.head_ref }}
+          DOMAIN: "ivanti.com"
 
   tests:
     name: Postman e2e Tests

@@ -44,7 +44,7 @@ metadata:
   name: docker-registry-ivanti-virtualservice
 spec:
   hosts:
-    - ivanti.local
+    - ivanti.test
   gateways:
     - istio-system/docker-registry-ivanti-gateway-local
   http:

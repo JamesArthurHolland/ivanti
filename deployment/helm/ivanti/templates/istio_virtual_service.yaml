@@ -10,6 +10,6 @@ spec:
   http:
     - route:
         - destination:
-            host: oneapi.{{ .Values.namespace }}.svc.cluster.local
+            host: ivanti-api.{{ .Values.namespace }}.svc.cluster.local
             port:
               number: 80

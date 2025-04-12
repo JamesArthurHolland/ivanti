@@ -17,7 +17,7 @@ build_vars:
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
   NONLIVE_CONTEXTS: 'pull-request|dev|release-pr'
   NS_CONTEXTS: 'pull-request|dev|live|release-pr|tagging'
-  DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
+  DOMAIN: '{{DOMAIN | default_if_none:"ivanti.test"}}'
   ENV: '{{ENV | default_if_none:"local"}}'
   DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ozone2021'}}"
   PRODUCT_OVERALL_VERSION: "{{PRODUCT_OVERALL_VERSION}}"
@@ -31,8 +31,6 @@ build_vars:
   COUNTER_SOURCE_FILES:
   - "{{COUNTER_DIR}}/**"
   POSTGRES_DIR: "./projects/psql"
-  services:
-    - api
 environments:
   - name: local
     include:
@@ -42,11 +40,10 @@ environments:
       HELM_INSTALL_NAME: "ivanti"
       NAMESPACE: "ivanti"
       API_HOST: 'api.ivanti.local'
+      API_FULL_TAG: "{{DOCKER_REGISTRY}}/api:latest"
       KUBECONFIG: '{{HOME}}/.kube/config'
 
   - name: live
-    include:
-      - name: version-1
     with_vars:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
@@ -54,7 +51,7 @@ environments:
       API_HOST: 'api.ivanti.com'
       KUBECONFIG: '{{HOME}}/.kube/config'
 
-  - name: docker-tag-latest
+  - name: all-docker-tags-latest
     with_vars:
       DOCKER_FULL_TAG: "{{DOCKER_REGISTRY}}/{{SERVICE}}:latest"
 
