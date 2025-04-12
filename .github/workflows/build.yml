@@ -41,5 +41,7 @@ jobs:
           service_name: api
           is_release_version: ${{ inputs.is_release_version }}
           env: ${{ inputs.env }}
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_password: ${{ secrets.DOCKER_PASSWORD }}
 
 
