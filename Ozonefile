@@ -300,16 +300,6 @@ pipelines:
           DOMAIN: "ivanti.com"
           API_HOST: "api.{{DOMAIN}}"
 
-  - name: deploy-staging
-    depends_on:
-      - name: install-infrastructure-dependencies
-      - name: deploy-all
-        with_vars:
-          CONFIGMAP_FILENAME: "live-env-configmap.yaml"
-          SUBDOMAIN: ""
-          DOMAIN: "staging.ivanti.com"
-          API_HOST: "api.{{DOMAIN}}"
-
   - name: deploy-pr
     depends_on:
       - name: install-infrastructure-dependencies

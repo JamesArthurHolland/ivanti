@@ -28,7 +28,7 @@ jobs:
 
       - name: "Deploy to staging"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-staging
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run build-all deploy-prod
         env:
           GIT_BRANCH: ${{ github.head_ref }}
           PRODUCT_OVERALL_VERSION: "1.0"
