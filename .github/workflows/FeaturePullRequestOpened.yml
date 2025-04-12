@@ -66,6 +66,7 @@ jobs:
         uses: ./.github/actions/install-e2e-test-deps
         with:
           ozone-version: 1.2.34
+
       - name: "Ozone - Postman tests"
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run postman-tests
