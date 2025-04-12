@@ -40,7 +40,7 @@ runs:
       uses: Azure/k8s-set-context@v1
       with:
         method: kubeconfig
-        kubeconfig: ${{ inputs.LKE_CREDS_BASE64 }}
+        kubeconfig: ${{ inputs.kube_config }}
 
     - name: "Setup istioctl"
       uses: zufardhiyaulhaq/setup-istioctl@v1.0.0
