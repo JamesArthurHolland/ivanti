@@ -26,7 +26,7 @@ jobs:
         with:
           env: staging
 
-      - name: "Deploy to staging"
+      - name: "Deploy to live"
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run build-all deploy-prod
         env:

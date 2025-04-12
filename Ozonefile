@@ -21,8 +21,6 @@ build_vars:
   ENV: '{{ENV | default_if_none:"local"}}'
   DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ozone2021'}}"
   PRODUCT_OVERALL_VERSION: "{{PRODUCT_OVERALL_VERSION}}"
-  SSL_ENABLED: '{{SSL_ENABLED | default_if_none:"false"}}'
-  SSL_PRIVATE_KEY64: "{{SSL_PRIVATE_KEY64}}"
   ROOT_DIR: ./
   PROJECTS_DIR: ./projects
   GIT_BRANCH: "{{GIT_BRANCH}}"
