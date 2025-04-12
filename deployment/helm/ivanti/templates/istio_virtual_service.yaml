@@ -4,7 +4,7 @@ metadata:
   name: ivanti.{{ .Values.namespace }}.{{ .Values.domain }}
 spec:
   hosts:
-    - {{ .Values.services.ivanti.host }}
+    - {{ .Values.services.api.host }}
   gateways:
     - istio-system/docker-registry-ivanti-gateway-{{ .Values.env }}
   http:
