@@ -32,15 +32,9 @@ runs:
       shell: bash
       run: go install github.com/ozone2021/ozone/ozone@${{ inputs.ozone-version }}
 
-    - name: "Make kube directory"
-      shell: bash
-      run: mkdir $HOME/.kube
-
     - name: Kubernetes set context
-      uses: Azure/k8s-set-context@v1
-      with:
-        method: kubeconfig
-        kubeconfig: ${{ inputs.kube_config }}
+      shell: bash
+      run: mkdir $HOME/.kube && echo "${{ inputs.kube_config }}" > $HOME/.kube/config
 
     - name: "Setup istioctl"
       uses: zufardhiyaulhaq/setup-istioctl@v1.0.0

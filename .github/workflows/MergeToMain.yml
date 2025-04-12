@@ -13,6 +13,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
@@ -30,6 +31,5 @@ jobs:
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-staging
         env:
-          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_BRANCH: ${{ github.head_ref }}
-          PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
+          PRODUCT_OVERALL_VERSION: "1.0"
