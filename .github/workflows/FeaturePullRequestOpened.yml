@@ -2,8 +2,7 @@ name: FEATURE Pull Request Opened / Committed to
 on:
   pull_request:
     branches:
-      - 'release/**'
-      - 'feature/**'
+      - 'main'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

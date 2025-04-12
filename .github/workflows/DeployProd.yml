@@ -34,12 +34,6 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
           ozone-version: 1.4.33
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registries: 536307352280
-
       - name: Get version
         id: version
         uses: ./.github/actions/get-version
