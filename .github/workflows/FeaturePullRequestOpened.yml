@@ -12,14 +12,13 @@ jobs:
   build_all:
     name: Build all
     uses: ./.github/workflows/build.yml
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
       ozone_context: pull-request
       env: "pr"
       is_release_version: false
       ozone_version: 1.4.33
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_password: ${{ secrets.DOCKER_PASSWORD }}
 
   deploy_all:
     name: Deploy all
