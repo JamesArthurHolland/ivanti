@@ -1,12 +1,6 @@
 name: 'Deploy'
 description: 'Builds containers, pushes them to docker repo, tests with postman/newman'
 inputs:
-  cert_dir:
-    description: 'Cert dir'
-    required: true
-  db_host:
-    description: 'DB Host'
-    required: true
   docker_registry_id:
     description: 'Docker registry id'
     required: true
@@ -25,38 +19,12 @@ inputs:
   ozone_runnable:
     description: 'Ozone runnable'
     required: true
-  uses_container_db:
-    description: 'Uses container db'
-    required: false
-  ssl_private_key64:
-    description: 'SSL private key'
-    required: true
-  ssl_combined_cert64:
-    description: 'SSL combined cert'
-    required: true
-  ssl_ca64:
-    description: 'SSL ca'
-    required: true
-  aws_account_name:
-    description: 'AWS account name'
-    required: true
-  cluster_autoscaling_iam_role_arn:
-    description: 'AWS cluster autoscaling IAM Role ARN.'
-    required: true
-  locations_backup_s3_bucket:
-    description: 'Elasticsearch backup bucket for locations data'
-    required: true
 
 runs:
   using: "composite"
   steps:
     # Install dependencies
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registries: ${{ inputs.docker_registry_id }}
 
     - name: Get version
       if: inputs.is_release_version == 'true'
@@ -79,13 +47,6 @@ runs:
         DOCKER_BUILDKIT: "1"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
-        SSL_ENABLED: "true" # TODO move this into ozone
-        SSL_PRIVATE_KEY64: ${{ inputs.ssl_private_key64 }}
-        SSL_COMBINED_CERT64: ${{ inputs.ssl_combined_cert64 }}
-        SSL_CA64: ${{ inputs.ssl_ca64 }}
-        AWS_ACCOUNT_NAME: ${{ inputs.aws_account_name }}
-        CLUSTER_AUTOSCALING_IAM_ROLE_ARN: ${{ inputs.cluster_autoscaling_iam_role_arn }}
-        LOCATIONS_BACKUP_S3_BUCKET: ${{ inputs.locations_backup_s3_bucket }}
 
     - name: "Ozone - Deploy release - Dev - semantic_version_from_git_log"
       if: inputs.is_release_version == 'true' && inputs.env == 'dev'
@@ -101,13 +62,6 @@ runs:
         DOCKER_CONTAINER_VERSION_TAG: ${{ steps.version.outputs.semantic_version_from_git_log }} # wrong I think?
         DOCKER_BUILDKIT: "1"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
-        DB_HOST: ${{ inputs.db_host }}
-        SSL_ENABLED: "true" # TODO move this into ozone
-        SSL_PRIVATE_KEY64: ${{ inputs.ssl_private_key64 }}
-        SSL_COMBINED_CERT64: ${{ inputs.ssl_combined_cert64 }}
-        SSL_CA64: ${{ inputs.ssl_ca64 }}
-        AWS_ACCOUNT_NAME: ${{ inputs.aws_account_name }}
-        CLUSTER_AUTOSCALING_IAM_ROLE_ARN: ${{ inputs.cluster_autoscaling_iam_role_arn }}
 
     - name: "Ozone - Deploy release - Staging - semantic_version_from_git_tag"
       if: inputs.is_release_version == 'true' && inputs.env == 'staging'
@@ -124,12 +78,6 @@ runs:
         DOCKER_BUILDKIT: "1"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
-        SSL_ENABLED: "true" # TODO move this into ozone
-        SSL_PRIVATE_KEY64: ${{ inputs.ssl_private_key64 }}
-        SSL_COMBINED_CERT64: ${{ inputs.ssl_combined_cert64 }}
-        SSL_CA64: ${{ inputs.ssl_ca64 }}
-        AWS_ACCOUNT_NAME: ${{ inputs.aws_account_name }}
-        CLUSTER_AUTOSCALING_IAM_ROLE_ARN: ${{ inputs.cluster_autoscaling_iam_role_arn }}
 
     - name: "Ozone - Deploy release - Live - semantic_version_from_git_tag"
       if: inputs.is_release_version == 'true' && inputs.env == 'prod'
@@ -144,11 +92,3 @@ runs:
         DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
         PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
         DOCKER_BUILDKIT: "1" # TODO move this into ozone
-        USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
-        DB_HOST: ${{ inputs.db_host }}
-        SSL_ENABLED: "true" # TODO move this into ozone
-        SSL_PRIVATE_KEY64: ${{ inputs.ssl_private_key64 }}
-        SSL_COMBINED_CERT64: ${{ inputs.ssl_combined_cert64 }}
-        SSL_CA64: ${{ inputs.ssl_ca64 }}
-        AWS_ACCOUNT_NAME: ${{ inputs.aws_account_name }}
-        CLUSTER_AUTOSCALING_IAM_ROLE_ARN: ${{ inputs.cluster_autoscaling_iam_role_arn }}

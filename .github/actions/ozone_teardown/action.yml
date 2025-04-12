@@ -1,21 +1,6 @@
 name: 'Teardown'
 description: 'Builds containers, pushes them to docker repo, tests with postman/newman'
 inputs:
-  aws_access_key_id:
-    description: 'aws_access_key_id'
-    required: true
-  aws_secret_access_key:
-    description: 'aws_secret_access_key'
-    required: true
-  aws_account_name:
-    description: 'AWS account name'
-    required: true
-  aws_account:
-    description: 'AWS account'
-    required: true
-  aws_region:
-    description: 'AWS region'
-    required: true
   env:
     description: 'Environment name'
     required: true

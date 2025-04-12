@@ -16,11 +16,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/ozone_teardown
         with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-          aws_account: 624086393560
-          aws_account_name: dev
-          aws_region: eu-west-1
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           env: "pr"
           ozone_context: release-pr
           ozone_version: 1.4.33

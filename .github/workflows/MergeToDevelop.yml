@@ -54,11 +54,6 @@ jobs:
           ozone-version: 1.4.33
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registries: 624086393560
 
       - name: "Ozone - Deploy to Dev"
         shell: bash

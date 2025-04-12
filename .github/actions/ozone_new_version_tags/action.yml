@@ -1,30 +1,6 @@
 name: 'Tag with new version tag'
 description: 'Retags a service with static version container tag, using the dynamic tag as the source.'
 inputs:
-  aws_access_key_id:
-    description: 'aws_access_key_id'
-    required: true
-  aws_secret_access_key:
-    description: 'aws_secret_access_key'
-    required: true
-  live_aws_access_key_id:
-    description: 'AWS creds'
-    required: true
-  live_aws_secret_access_key:
-    description: 'AWS creds'
-    required: true
-  live_docker_registry_id:
-    description: 'Live docker registry id - only for dev build, use docker_registry_id for live build'
-    required: false
-  aws_account:
-    description: 'AWS account'
-    required: true
-  aws_region:
-    description: 'AWS region'
-    required: true
-  docker_registry_id:
-    description: 'Docker registry id'
-    required: true
   env:
     description: 'Environment name'
     required: true
@@ -45,31 +21,9 @@ runs:
         ozone-version: ${{ inputs.ozone_version }}
         kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
-    - name: Configure aws - for live
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-region: eu-west-1
-        aws-access-key-id: ${{ inputs.live_aws_access_key_id }}
-        aws-secret-access-key: ${{ inputs.live_aws_secret_access_key }}
 
-    - name: Login to Live Amazon ECR
-      id: login-ecr-live
-      uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registries: ${{ inputs.live_docker_registry_id }}
 
-    - name: Configure aws - for dev
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-region: eu-west-1
-        aws-access-key-id: ${{ inputs.aws_access_key_id }}
-        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
 
-    - name: Login to Amazon ECR
-      id: login-ecr-dev
-      uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registries: ${{ inputs.docker_registry_id }}
 
     - name: Get version
       id: version

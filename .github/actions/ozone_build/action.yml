@@ -1,12 +1,6 @@
 name: 'Build'
 description: 'Builds containers'
 inputs:
-  aws_access_key_id:
-    description: 'aws_access_key_id'
-    required: true
-  aws_secret_access_key:
-    description: 'aws_secret_access_key'
-    required: true
   ozone_context:
     description: 'Ozone context'
     required: true
