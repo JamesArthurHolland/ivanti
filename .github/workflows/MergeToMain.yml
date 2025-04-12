@@ -33,4 +33,5 @@ jobs:
           GIT_BRANCH: ${{ github.head_ref }}
           PRODUCT_OVERALL_VERSION: "1.0"
           ENV: live
+          DOMAIN: "ivanti.com"
 
