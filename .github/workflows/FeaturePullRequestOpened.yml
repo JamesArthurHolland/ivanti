@@ -34,11 +34,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+
 
       - uses: ./.github/workflows/build.yml
         with:
@@ -58,7 +54,6 @@ jobs:
         env:
           DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_BRANCH: ${{ github.head_ref }}
-          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}
 
   tests:
     name: Postman e2e Tests
