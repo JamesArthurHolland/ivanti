@@ -244,6 +244,7 @@ deploys:
                   - "--set namespace={{NAMESPACE}}"
                   - "--set services.api.host={{API_HOST}}"
                   - "--set services.api.full_tag={{API_FULL_TAG}}"
+                  - "--set image.tag={{API_FULL_TAG}}"
               INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: teardown
