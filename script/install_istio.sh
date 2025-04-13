@@ -23,6 +23,7 @@ if [[ -z "$DOMAIN" ]]; then
   exit 3
 fi
 
+
 if [[ -z "$ENV" ]]; then
   echo "\$ENV not set"
   exit 3
@@ -48,4 +49,4 @@ spec:
         - *.ivanti.test
 END
 
-exit 0
+

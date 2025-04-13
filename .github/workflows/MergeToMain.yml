@@ -4,9 +4,25 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  build_all:
+    name: Build all
+    uses: ./.github/workflows/build.yml
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
+    with:
+      ozone_context: pull-request
+      env: "pr"
+      ozone_version: 1.4.33
+
   deploy_all:
     name: Deploy all
+    needs:
+      - build_all
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.5.2
@@ -14,10 +30,45 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
+
+      - uses: ./.github/workflows/build.yml
+        with:
+          ozone_context: live
+          env: "pr"
+          ozone_version: 1.4.33
+
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
           ozone-version: 1.4.33
+          kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
+
+      - name: "Ozone - Deploy Feature PR"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-pr
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+
+  tests:
+    name: Postman e2e Tests
+    needs:
+      - deploy_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-e2e-test-deps
+        with:
+          ozone-version: 1.2.34
+      - name: "Ozone - Postman tests"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
+        env:
+          GIT_BRANCH: ${{ github.head_ref }}
 
       - name: "Deploy"
         shell: bash
