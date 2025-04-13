@@ -11,6 +11,8 @@ context:
       - live
 
 build_vars:
+  LOCAL_CONTEXT: 'local'
+  LIVE_CONTEXT: 'live'
   HOME: "{{HOME}}"
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
   NONLIVE_CONTEXTS: 'pull-request|dev|release-pr'
@@ -171,6 +173,13 @@ pre_utilities:
         with_vars:
           SCRIPT: script/create_namespace.sh
 
+  - name: add-ip-to-hosts
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: script/add_ip_to_hosts.sh
+
   - name: install-istio
     context_steps:
       - context: "{{CONTEXT}}"
@@ -184,6 +193,7 @@ pre_utilities:
     depends_on:
       - name: create-namespace
       - name: install-istio
+#      - name: add-ip-to-hosts
       - name: install-docker-registry
 
 builds:
@@ -234,6 +244,13 @@ builds:
       - name: build-api
 
 deploys:
+  - name: deploy-virtual-service
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: ./deployment/helm/ivanti/script/virtual-service.sh
+
   - name: deploy-all
     context_steps:
       - context: "{{CONTEXT}}"
