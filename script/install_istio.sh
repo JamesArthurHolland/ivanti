@@ -51,7 +51,7 @@ spec:
       hosts:
         - "*.$DOMAIN"
         - "$DOMAIN"
-        - *.ivanti.test
+        - "*.ivanti.test"
 END
 
 echo "Istio installed"
