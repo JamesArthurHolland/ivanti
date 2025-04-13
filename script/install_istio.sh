@@ -10,7 +10,6 @@ echo "-----------------------------------------------"
 
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.1/standard-install.yaml --validate=false
 
-
 istioctl install -y
 
 echo "After istioctl"
