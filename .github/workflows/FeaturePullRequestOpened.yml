@@ -48,12 +48,12 @@ jobs:
       - name: "Ozone - Deploy Feature PR"
         shell: bash
         run: export GIT_BRANCH=$(./script/utils/dynamic_namespace.sh) && export env=pr && export NAMESPACE="$GIT_BRANCH" && export GIT_BRANCH="ozone2021/api:$GIT_BRANCH" && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run deploy-pr
-        with:
-          ozone_context: pull-request
-          env: "pr"
         env:
+          ozone_context: pull-request
           DOCKER_REGISTRY: ozone2021
           DOMAIN: "ivanti.com"
+          env: "pr"
+
 
   tests:
     name: Postman e2e Tests
