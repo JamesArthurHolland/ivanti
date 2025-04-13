@@ -13,9 +13,6 @@ inputs:
   service_name:
     description: 'Service name.'
     required: true
-  is_release_version:
-    description: 'Is release version'
-    required: true
   lke_creds:
     description: 'LKE creds'
     required: true
