@@ -10,6 +10,6 @@ spec:
   http:
     - route:
         - destination:
-            host: ivanti-live.{{ .Values.namespace }}.svc.cluster.local
+            host: api.{{ .Values.namespace }}.svc.cluster.local
             port:
               number: 80
