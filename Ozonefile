@@ -106,7 +106,6 @@ environments:
 
   - name: ns_static
     with_vars:
-      NAMESPACE: "{{ENV}}"
       HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
       UI_HOST: "{{DOMAIN}}"
 
