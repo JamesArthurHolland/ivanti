@@ -1,4 +1,4 @@
-name: STAGING
+name: Live
 on:
   push:
     branches:
@@ -17,7 +17,8 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
-      ozone_context: pull-request
+      ozone_context: live
+      service_name: api
       env: "pr"
       ozone_version: 1.4.39
 
@@ -33,12 +34,6 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-#      - uses: ./.github/workflows/build.yml
-#        with:
-#          ozone_context: live
-#          env: "pr"
-#          ozone_version: 1.4.39
-
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
@@ -51,20 +46,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Get version
-        id: version
-        uses: ./.github/actions/get-version
-        with:
-          ozone-version: 1.2.34
-      - name: "Ozone - Postman tests"
-        shell: bash
-        run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
-        env:
-          GIT_BRANCH: ${{ github.head_ref }}
-
       - name: "Deploy"
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-prod
         env:
           DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          GIT_BRANCH: ${{ github.head_ref }}
+
+      - name: "Ozone - Postman tests"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
+        env:
           GIT_BRANCH: ${{ github.head_ref }}
