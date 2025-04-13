@@ -52,7 +52,7 @@ jobs:
           ozone_context: pull-request
           DOCKER_REGISTRY: ozone2021
           DOMAIN: "ivanti.com"
-          env: "pr"
+          ENV: "pr"
 
 
   tests:
