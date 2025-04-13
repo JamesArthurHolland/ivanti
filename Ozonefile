@@ -69,20 +69,6 @@ environments:
     with_vars:
       "{{service | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{service}}:1.0"
 
-  - name: all-docker-tags-dynamic
-    for: SERVICE:services
-    include:
-      - name: env/git_log_hash
-        type: builtin
-        input_vars:
-          GIT_DIR: "{{PROJECTS_DIR}}/{{SERVICE}}"
-          GIT_SOURCE_FILES:
-            - "{{{{SERVICE | upper}}_SOURCE_FILES}}"
-    with_vars:
-      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{GIT_LOG_HASH}}"
-      "{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION": "{{LIVE_DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
-      "{{SERVICE | upper}}_SHORT_TAG": "{{GIT_LOG_HASH}}"
-
   - name: all-docker-tags-static
     for: SERVICE:services
     with_vars:
@@ -133,8 +119,7 @@ environments:
       - name: all-docker-tags-dynamic
       - name: host_dynamic
     with_vars:
-      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
-      ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/values-istio-pr.yaml"
+      ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/value.yamll"
 
   - name: release-pr
     include:
