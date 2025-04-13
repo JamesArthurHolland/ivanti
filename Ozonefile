@@ -39,7 +39,7 @@ environments:
       - name: all-docker-tags-latest
     with_vars:
       SUBDOMAIN: ""
-      HELM_INSTALL_NAME: "ivanti"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
       NAMESPACE: "local"
       API_HOST: 'api.ivanti.local'
       API_FULL_TAG: "{{DOCKER_REGISTRY}}/api:latest"
@@ -106,8 +106,7 @@ environments:
 
   - name: ns_static
     with_vars:
-      HELM_INSTALL_NAME: "ivanti2-{{NAMESPACE}}"
-      UI_HOST: "{{DOMAIN}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: short-tag-dynamic
     with_vars:
@@ -242,7 +241,7 @@ deploys:
                   - "--set namespace={{NAMESPACE}}"
                   - "--set services.api.host={{API_HOST}}"
                   - "--set services.api.full_tag={{API_FULL_TAG}}"
-              INSTALL_NAME: "{{HELM_INSTALL_NAME}}"
+              INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: teardown
     context_steps:
