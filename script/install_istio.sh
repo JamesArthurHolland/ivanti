@@ -14,8 +14,13 @@ istioctl install -y
 
 echo "After istioctl"
 
+if [[ -z "$NAMESPACE" ]]; then
+  echo "\$NAMESPACE not set"
+  exit 3
+fi
+
 #echo "Namespace is $NAMESPACE"
-kubectl label namespace/"${NAMESPACE}" istio-injection=enabled --overwrite
+kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
 
 if [[ -z "$DOMAIN" ]]; then
   echo "\$DOMAIN not set"
