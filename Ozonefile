@@ -9,10 +9,11 @@ context:
       - live
 
 build_vars:
-  HOME: "{{HOME}}"
   LOCAL_CONTEXT: 'local'
   LIVE_CONTEXT: 'live'
+  HOME: "{{HOME}}"
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
+=
   NONLIVE_CONTEXTS: 'pull-request|dev'
   NS_CONTEXTS: 'pull-request|dev|live'
   DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
@@ -37,29 +38,30 @@ environments:
       - name: all-docker-tags-latest
     with_vars:
       SUBDOMAIN: ""
-      HELM_INSTALL_NAME: "ivanti"
-      NAMESPACE: "ivanti"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
+      NAMESPACE: "local"
       API_HOST: 'api.ivanti.local'
+      API_FULL_TAG: "{{DOCKER_REGISTRY}}/api:latest"
       KUBECONFIG: '{{HOME}}/.kube/config'
+      ENV: "local"
 
   - name: live
-    include:
-      - name: version-1
     with_vars:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
-      NAMESPACE: "ivanti"
       API_HOST: 'api.ivanti.com'
       KUBECONFIG: '{{HOME}}/.kube/config'
+      NAMESPACE: "live"
+      ENV: "live"
 
-  - name: docker-tag-latest
+  - name: all-docker-tags-latest
     with_vars:
       DOCKER_FULL_TAG: "{{DOCKER_REGISTRY}}/{{SERVICE}}:latest"
 
   - name: host_dynamic
     with_vars:
       API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
-      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: version-1
     for: service:services
@@ -67,20 +69,6 @@ environments:
       - name: docker-tag-latest
     with_vars:
       "{{service | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{service}}:1.0"
-
-  - name: all-docker-tags-dynamic
-    for: SERVICE:services
-    include:
-      - name: env/git_log_hash
-        type: builtin
-        input_vars:
-          GIT_DIR: "{{PROJECTS_DIR}}/{{SERVICE}}"
-          GIT_SOURCE_FILES:
-            - "{{{{SERVICE | upper}}_SOURCE_FILES}}"
-    with_vars:
-      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{GIT_LOG_HASH}}"
-      "{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION": "{{LIVE_DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
-      "{{SERVICE | upper}}_SHORT_TAG": "{{GIT_LOG_HASH}}"
 
   - name: all-docker-tags-static
     for: SERVICE:services
@@ -94,12 +82,25 @@ environments:
         with_vars:
           DOMAIN: "{{DOMAIN}}"
           GIT_BRANCH: "{{GIT_BRANCH}}"
+          NAMESPACE: "{{GIT_LOG_HASH}}"
+
+  - name: all-docker-tags-dynamic
+    for: SERVICE:services
+    include:
+      - name: env/git_log_hash
+        type: builtin
+        input_vars:
+          GIT_DIR: "{{{{SERVICE | upper}}_DIR}}"
+          GIT_SOURCE_FILES:
+            - "{{{{SERVICE | upper}}_SOURCE_FILES}}"
+    with_vars:
+      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{GIT_LOG_HASH}}"
+      "{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION": "{{LIVE_DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
+      "{{SERVICE | upper}}_SHORT_TAG": "{{GIT_LOG_HASH}}"
 
   - name: ns_static
     with_vars:
-      NAMESPACE: "{{ENV}}"
-      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
-      UI_HOST: "{{DOMAIN}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: short-tag-dynamic
     with_vars:
@@ -107,12 +108,12 @@ environments:
 
   - name: pull-request
     include:
-      - name: ns_git_branch_prefix
       - name: all-docker-tags-dynamic
       - name: host_dynamic
     with_vars:
-      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
-      ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/values-istio-pr.yaml"
+      ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/value.yamll"
+      NAMESPACE: "{{GIT_LOG_HASH}}"
+      ENV: "pull-request"
 
   - name: dev
     include:
@@ -126,10 +127,10 @@ environments:
       SUBDOMAIN: ""
       DOCKER_CONTAINER_VERSION_TAG: "{{PRODUCT_OVERALL_VERSION}}"
 
-  - name: host_docker_internal
-    with_vars:
-      HOST_DOCKER_INTERNAL_FULL: "--add-host host.docker.internal:host-gateway"
-      HOST_DOCKER_INTERNAL: "{{ HOST_DOCKER_INTERNAL_FULL | default_if_none:''}}"
+#  - name: host_docker_internal
+#    with_vars:
+#      HOST_DOCKER_INTERNAL_FULL: "--add-host host.docker.internal:host-gateway"
+#      HOST_DOCKER_INTERNAL: "{{ HOST_DOCKER_INTERNAL_FULL | default_if_none:''}}"
 
 pre_utilities:
   - name: install-docker-registry
@@ -148,6 +149,13 @@ pre_utilities:
         with_vars:
           SCRIPT: script/create_namespace.sh
 
+  - name: add-ip-to-hosts
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: script/add_ip_to_hosts.sh
+
   - name: install-istio
     context_steps:
       - context: "{{CONTEXT}}"
@@ -161,6 +169,7 @@ pre_utilities:
     depends_on:
       - name: create-namespace
       - name: install-istio
+#      - name: add-ip-to-hosts
       - name: install-docker-registry
 
 builds:
@@ -211,6 +220,13 @@ builds:
       - name: build-api
 
 deploys:
+  - name: deploy-virtual-service
+    steps:
+      - type: builtin
+        name: bashScript
+        with_vars:
+          SCRIPT: ./deployment/helm/ivanti/script/virtual-service.sh
+
   - name: deploy-all
     context_steps:
       - context: "{{CONTEXT}}"
@@ -223,11 +239,11 @@ deploys:
                   - "-n {{NAMESPACE}}"
                   - "-f ./deployment/helm/ivanti/values.yaml"
                   - "--set env={{ENV}}"
-                  - "--set domain={{DOMAIN}}"
+                  - "--set domain={{API_FULL_TAG}}"
                   - "--set namespace={{NAMESPACE}}"
                   - "--set services.api.host={{API_HOST}}"
                   - "--set services.api.full_tag={{API_FULL_TAG}}"
-              INSTALL_NAME: "{{HELM_INSTALL_NAME}}"
+              INSTALL_NAME: "{{GIT_LOG_HASH}}"
 
   - name: teardown
     context_steps:
@@ -282,3 +298,8 @@ pipelines:
     depends_on:
       - name: install-infrastructure-dependencies
       - name: deploy-all
+    with_vars:
+      DOMAIN: "ivanti.com"
+      API_HOST: "api.{{DOMAIN}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
+      NAMESPACE: "{{NAMESPACE}}"

@@ -10,15 +10,6 @@ jobs:
     name: Deploy all
     runs-on: ubuntu-latest
     steps:
-      - name: Check deployment secret
-        run: |
-          if [ "$GIVEN_DEPLOYMENT_SECRET" != "$DEPLOYMENT_SECRET" ]; then
-            echo "Deployment secret is incorrect. Exiting."
-            exit 1;
-          fi
-        env:
-          GIVEN_DEPLOYMENT_SECRET: ${{ github.event.inputs.deployment_secret }}
-          DEPLOYMENT_SECRET: ${{ secrets.DEPLOYMENT_SECRET }}
       - uses: actions/checkout@v3.5.2
         with:
           submodules: recursive
@@ -39,7 +30,7 @@ jobs:
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-prod
         env:
-          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          DOCKER_REGISTRY: ozone2021
           GIT_BRANCH: ${{ github.head_ref }}
           INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_LIVE }}
           PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
