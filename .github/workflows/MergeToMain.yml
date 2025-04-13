@@ -49,8 +49,9 @@ jobs:
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-prod
         env:
-          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          DOCKER_REGISTRY: ozone2021
           GIT_BRANCH: ${{ github.head_ref }}
+          ENV: "live"
 
       - name: "Ozone - Postman tests"
         shell: bash
