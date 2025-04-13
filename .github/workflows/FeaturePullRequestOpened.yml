@@ -16,10 +16,10 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     with:
-      ozone_context: pull-request
-      env: "pr"
-      is_release_version: false
-      ozone_version: 1.4.33
+      OZONE_CONTEXT: pull-request
+      ENV: "pr"
+      IS_RELEASE_VERSION: false
+      OZONE_VERSION: 1.4.33
 
   deploy_all:
     name: Deploy all
@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: export GIT_BRANCH=$(./script/utils/dynamic_namespace.sh) && export env=pr && export NAMESPACE="$GIT_BRANCH" && export GIT_BRANCH="ozone2021/api:$GIT_BRANCH" && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run deploy-pr
         env:
-          ozone_context: pull-request
+          OZONE_CONTEXT: pull-request
           DOCKER_REGISTRY: ozone2021
           DOMAIN: "ivanti.com"
           ENV: "pr"
