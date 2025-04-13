@@ -17,9 +17,8 @@ set -e
 source $(dirname "$0")/vars/vars.sh
 
 
-newman run --verbose $ROOT_DIR/tests/postman/run/user_and_eprofile.postman_collection.json \
-  --env-var "jwt=$TOKEN" \
-  --env-var "api_url=${api_url_with_protocol}"
+newman run --verbose $ROOT_DIR/tests/postman/run/e2e-tests.postman_collection.json \
+  --env-var "endpoint=$API_HOST"
 
 # TODO set timeout for crewchange tests to stop infinite loop.
 
