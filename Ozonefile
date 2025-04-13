@@ -12,8 +12,6 @@ context:
 
 build_vars:
   HOME: "{{HOME}}"
-  LOCAL_CONTEXT: 'local'
-  LIVE_CONTEXT: 'live'
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
   NONLIVE_CONTEXTS: 'pull-request|dev|release-pr'
   NS_CONTEXTS: 'pull-request|dev|live|release-pr|tagging'
