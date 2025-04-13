@@ -5,7 +5,9 @@
 replicaCount: 2
 
 image:
-  pullPolicy: IfNotPresent
+  api:
+    full_tag: ozone2021/api:latest
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
