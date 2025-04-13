@@ -128,11 +128,6 @@ environments:
       DOCKER_CONTAINER_VERSION_TAG: "{{PRODUCT_OVERALL_VERSION}}"
       GIT_BRANCH: main
 
-#  - name: host_docker_internal
-#    with_vars:
-#      HOST_DOCKER_INTERNAL_FULL: "--add-host host.docker.internal:host-gateway"
-#      HOST_DOCKER_INTERNAL: "{{ HOST_DOCKER_INTERNAL_FULL | default_if_none:''}}"
-
 pre_utilities:
   - name: install-docker-registry
     context_steps:
