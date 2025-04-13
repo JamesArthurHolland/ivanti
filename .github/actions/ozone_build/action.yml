@@ -44,7 +44,7 @@ runs:
 
     - name: "Ozone - Build."
       shell: bash
-      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run "build-${{ inputs.service_name }}"
+      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run install-build-deploy-all
       env:
         GIT_BRANCH: ${{ github.head_ref }}
         DOCKER_BUILDKIT: "1"

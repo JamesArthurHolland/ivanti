@@ -52,7 +52,7 @@ jobs:
 
       - name: "Ozone - Deploy Feature PR"
         shell: bash
-        run: export NAMESPACE=$(echo $GIT_BRANCH | awk -F'/' '{print $1}')  && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run deploy-pr
+        run: export NAMESPACE=$(echo $GIT_BRANCH | awk -F'/' '{print $1}')  && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run install-build-deploy-all
         env:
           GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
           CONTEXT: pull-request
