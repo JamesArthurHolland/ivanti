@@ -51,6 +51,7 @@ environments:
       HELM_INSTALL_NAME: "ivanti"
       API_HOST: 'api.ivanti.com'
       KUBECONFIG: '{{HOME}}/.kube/config'
+      NAMESPACE: "live"
 
   - name: all-docker-tags-latest
     with_vars:
