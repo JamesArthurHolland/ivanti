@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-prod
         env:
-          DOCKER_REGISTRY: ozone2021
+          DOCKER_REGISTRY: ivanti
           GIT_BRANCH: ${{ github.head_ref }}
           ENV: "live"
 

@@ -30,7 +30,7 @@ runs:
         CERT_DIR: ${{ inputs.cert_dir }}
         GIT_BRANCH: ${{ github.head_ref }}
         GITHUB_USERNAME: ${{ inputs.github_username }}
-        DOCKER_REGISTRY: ozone2021
+        DOCKER_REGISTRY: ivanti
         DOCKER_BUILDKIT: "1"
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}

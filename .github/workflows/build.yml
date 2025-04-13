@@ -42,6 +42,6 @@ jobs:
           env: ${{ inputs.env }}
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_password: ${{ secrets.DOCKER_PASSWORD }}
-          docker_registry: ozone2021
+          docker_registry: ivanti
 
 

@@ -6,7 +6,7 @@ replicaCount: 2
 
 image:
   api:
-    full_tag: ozone2021/api:latest
+    full_tag: ivanti/api:latest
   pullPolicy: Always
 
 imagePullSecrets: []
