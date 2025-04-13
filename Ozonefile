@@ -49,6 +49,7 @@ environments:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
       API_HOST: 'api.ivanti.com'
+      API_FULL_TAG: "{{DOCKER_REGISTRY}}/api:1.0"
       KUBECONFIG: '{{HOME}}/.kube/config'
       NAMESPACE: "live"
       ENV: "live"
