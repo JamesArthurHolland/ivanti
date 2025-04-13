@@ -19,7 +19,7 @@ if [[ -z "$NAMESPACE" ]]; then
   exit 3
 fi
 
-#echo "Namespace is $NAMESPACE"
+echo "Namespace is $NAMESPACE"
 kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
 
 if [[ -z "$DOMAIN" ]]; then
