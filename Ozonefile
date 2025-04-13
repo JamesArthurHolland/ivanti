@@ -107,11 +107,11 @@ environments:
 
   - name: pull-request
     include:
+      - name: ns_git_branch_prefix
       - name: all-docker-tags-dynamic
       - name: host_dynamic
     with_vars:
       ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/value.yamll"
-      NAMESPACE: "{{GIT_BRANCH}}"
       ENV: "pull-request"
 
   - name: dev
@@ -283,6 +283,7 @@ pipelines:
       - name: deploy-all
         with_vars:
           SUBDOMAIN: "dev."
+      - name: add-ip-to-hosts
 
   - name: deploy-prod
     depends_on:
@@ -292,11 +293,13 @@ pipelines:
           SUBDOMAIN: ""
           DOMAIN: "ivanti.com"
           API_HOST: "api.{{DOMAIN}}"
+      - name: add-ip-to-hosts
 
   - name: deploy-pr
     depends_on:
       - name: install-infrastructure-dependencies
       - name: deploy-all
+      - name: add-ip-to-hosts
     with_vars:
       DOMAIN: "ivanti.com"
       API_HOST: "api.{{DOMAIN}}"

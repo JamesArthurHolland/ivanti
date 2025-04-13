@@ -45,10 +45,16 @@ jobs:
           ozone-version: 1.4.33
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
       - name: "Ozone - Deploy Feature PR"
         shell: bash
-        run: ozone -d -c pull-request run deploy-pr
+        run: export NAMESPACE=$(echo $GIT_BRANCH | awk -F'/' '{print $1}')  && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run deploy-pr
         env:
+          GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
           CONTEXT: pull-request
           DOCKER_REGISTRY: ozone2021
           DOMAIN: "ivanti.com"

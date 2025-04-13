@@ -21,6 +21,7 @@ fi
 
 echo "Namespace is $NAMESPACE"
 kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
+echo "After label"
 
 if [[ -z "$DOMAIN" ]]; then
   echo "\$DOMAIN not set"
@@ -50,7 +51,10 @@ spec:
       hosts:
         - "*.$DOMAIN"
         - "$DOMAIN"
-        - *.ivanti.test
+        - "*.ivanti.test"
+        - "*.ivanti.com"
 END
+
+echo "Istio installed"
 
 
