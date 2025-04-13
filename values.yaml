@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Values.namespace }}.{{ .Values.domain }}
+spec:
+  hosts:
+    - {{ .Values.services.api.host }}
+  gateways:
+    - istio-system/docker-registry-ivanti-gateway
+  http:
+    - route:
+        - destination:
+            host: ivanti-api.{{ .Values.namespace }}.svc.cluster.local
+            port:
+              number: 80
