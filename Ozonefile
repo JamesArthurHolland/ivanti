@@ -81,7 +81,7 @@ environments:
         with_vars:
           DOMAIN: "{{DOMAIN}}"
           GIT_BRANCH: "{{GIT_BRANCH}}"
-          NAMESPACE: "{{GIT_LOG_HASH}}"
+          NAMESPACE: "{{GIT_BRANCH}}"
 
   - name: all-docker-tags-dynamic
     for: SERVICE:services
@@ -111,7 +111,7 @@ environments:
       - name: host_dynamic
     with_vars:
       ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/value.yamll"
-      NAMESPACE: "{{GIT_LOG_HASH}}"
+      NAMESPACE: "{{GIT_BRANCH}}"
       ENV: "pull-request"
 
   - name: dev
