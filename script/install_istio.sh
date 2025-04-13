@@ -22,7 +22,7 @@ cat <<EOF > test.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: my-namespace
+  name: ${NAMESPACE}
   labels:
     istio-injection: enabled
 EOF
