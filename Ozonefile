@@ -296,3 +296,8 @@ pipelines:
     depends_on:
       - name: install-infrastructure-dependencies
       - name: deploy-all
+    with_vars:
+      DOMAIN: "ivanti.com"
+      API_HOST: "api.{{DOMAIN}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
+      NAMESPACE: "{{NAMESPACE}}"
