@@ -22,6 +22,9 @@ inputs:
   docker_password:
     description: 'Docker password'
     required: true
+  docker_registry:
+    description: 'Docker registry id'
+    required: true
 
 runs:
   using: "composite"
@@ -45,3 +48,4 @@ runs:
       env:
         GIT_BRANCH: ${{ github.head_ref }}
         DOCKER_BUILDKIT: "1"
+        DOCKER_REGISTRY: ${{ inputs.docker_registry }}

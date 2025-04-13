@@ -243,7 +243,7 @@ deploys:
                   - "--set namespace={{NAMESPACE}}"
                   - "--set services.api.host={{API_HOST}}"
                   - "--set services.api.full_tag={{API_FULL_TAG}}"
-              INSTALL_NAME: "{{GIT_LOG_HASH}}"
+              INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: teardown
     context_steps:
