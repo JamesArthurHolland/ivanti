@@ -125,6 +125,7 @@ environments:
     with_vars:
       SUBDOMAIN: ""
       DOCKER_CONTAINER_VERSION_TAG: "{{PRODUCT_OVERALL_VERSION}}"
+      GIT_BRANCH: main
 
 #  - name: host_docker_internal
 #    with_vars:
