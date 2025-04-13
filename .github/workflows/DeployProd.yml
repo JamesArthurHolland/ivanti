@@ -18,7 +18,7 @@ jobs:
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
-          ozone-version: 1.4.38
+          ozone-version: 1.4.39
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
       - name: Get version

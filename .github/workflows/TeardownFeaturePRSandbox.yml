@@ -19,4 +19,4 @@ jobs:
         with:
           env: "pr"
           ozone_context: pull-request
-          ozone_version: 1.4.38
+          ozone_version: 1.4.39
