@@ -17,7 +17,6 @@ jobs:
     with:
       ozone_context: pull-request
       env: "pr"
-      is_release_version: false
       ozone_version: 1.4.33
 
   deploy_all:
@@ -33,9 +32,8 @@ jobs:
 
       - uses: ./.github/workflows/build.yml
         with:
-          ozone_context: pull-request
+          ozone_context: live
           env: "pr"
-          is_release_version: false
           ozone_version: 1.4.33
 
       - name: Install deps

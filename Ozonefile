@@ -13,8 +13,8 @@ build_vars:
   LOCAL_CONTEXT: 'local'
   LIVE_CONTEXT: 'live'
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
-  NONLIVE_CONTEXTS: 'pull-request|dev|release-pr'
-  NS_CONTEXTS: 'pull-request|dev|live|release-pr|tagging'
+  NONLIVE_CONTEXTS: 'pull-request|dev'
+  NS_CONTEXTS: 'pull-request|dev|live'
   DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
   ENV: '{{ENV | default_if_none:"local"}}'
   DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ozone2021'}}"
@@ -95,14 +95,6 @@ environments:
           DOMAIN: "{{DOMAIN}}"
           GIT_BRANCH: "{{GIT_BRANCH}}"
 
-  - name: ns_git_branch_suffix
-    include:
-      - name: env/git_branch_release_version
-        type: builtin
-        with_vars:
-          DOMAIN: "{{DOMAIN}}"
-          GIT_BRANCH: "{{GIT_BRANCH}}"
-
   - name: ns_static
     with_vars:
       NAMESPACE: "{{ENV}}"
@@ -121,14 +113,6 @@ environments:
     with_vars:
       CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
       ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/values-istio-pr.yaml"
-
-  - name: release-pr
-    include:
-      - name: ns_git_branch_suffix
-      - name: all-docker-tags-dynamic
-      - name: host_dynamic
-    with_vars:
-      CONFIGMAP_FILENAME: "dev-env-configmap.yaml"
 
   - name: dev
     include:

@@ -15,7 +15,6 @@ jobs:
     with:
       ozone_context: dev
       env: "dev"
-      is_release_version: false
       github_username: vessul-cicd
       ozone_version: 1.4.33
 

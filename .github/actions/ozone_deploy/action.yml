@@ -7,9 +7,6 @@ inputs:
   env:
     description: 'Environment name'
     required: true
-  is_release_version:
-    description: 'Is release version'
-    required: true
   ozone_context:
     description: 'Ozone context'
     required: true
@@ -23,15 +20,8 @@ runs:
     # Install dependencies
 
 
-    - name: Get version
-      if: inputs.is_release_version == 'true'
-      id: version
-      uses: ./.github/actions/get-version
-      with:
-        env: ${{ inputs.env }}
 
-    - name: "Ozone - Deploy non-release."
-      if: inputs.is_release_version == 'false'
+    - name: "Ozone - Deploy."
       shell: bash
       run: cd $GITHUB_WORKSPACE && ozone -d -c "${{ inputs.ozone_context }}" run "${{ inputs.ozone_runnable }}"
       env:
@@ -45,47 +35,5 @@ runs:
         USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
         DB_HOST: ${{ inputs.db_host }}
 
-    - name: "Ozone - Deploy release - Dev - semantic_version_from_git_log"
-      if: inputs.is_release_version == 'true' && inputs.env == 'dev'
-      shell: bash
-      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run ${{ inputs.ozone_runnable }}
-      env:
-        DOMAIN: ${{ inputs.domain }}
-        ENV: ${{ inputs.env }}
-        CERT_DIR: ${{ inputs.cert_dir }}
-        GIT_BRANCH: ${{ github.head_ref }}
-        GITHUB_USERNAME: ${{ inputs.github_username }}
-        DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-        DOCKER_CONTAINER_VERSION_TAG: ${{ steps.version.outputs.semantic_version_from_git_log }} # wrong I think?
-        DOCKER_BUILDKIT: "1"
-        USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
 
-    - name: "Ozone - Deploy release - Staging - semantic_version_from_git_tag"
-      if: inputs.is_release_version == 'true' && inputs.env == 'staging'
-      shell: bash
-      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run ${{ inputs.ozone_runnable }}
-      env:
-        CERT_DIR: ${{ inputs.cert_dir }}
-        DOMAIN: ${{ inputs.domain }}
-        ENV: ${{ inputs.env }}
-        GIT_BRANCH: ${{ github.head_ref }}
-        GITHUB_USERNAME: ${{ inputs.github_username }}
-        DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-        PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
-        DOCKER_BUILDKIT: "1"
-        USES_CONTAINER_DB: ${{ inputs.uses_container_db }}
-        DB_HOST: ${{ inputs.db_host }}
 
-    - name: "Ozone - Deploy release - Live - semantic_version_from_git_tag"
-      if: inputs.is_release_version == 'true' && inputs.env == 'prod'
-      shell: bash
-      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run ${{ inputs.ozone_runnable }}
-      env:
-        CERT_DIR: ${{ inputs.cert_dir }}
-        DOMAIN: ${{ inputs.domain }}
-        ENV: ${{ inputs.env }}
-        GIT_BRANCH: ${{ github.head_ref }}
-        GITHUB_USERNAME: ${{ inputs.github_username }}
-        DOCKER_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
-        PRODUCT_OVERALL_VERSION: ${{ steps.version.outputs.semantic_version_from_git_tag }} # wrong I think?
-        DOCKER_BUILDKIT: "1" # TODO move this into ozone
