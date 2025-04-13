@@ -17,7 +17,7 @@ build_vars:
   NS_CONTEXTS: 'pull-request|dev|live'
   DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
   ENV: '{{ENV | default_if_none:"local"}}'
-  DOCKER_REGISTRY: "{{DOCKER_REGISTRY | default_if_none:'ozone2021'}}"
+  DOCKER_REGISTRY: "ozone2021"
   PRODUCT_OVERALL_VERSION: "{{PRODUCT_OVERALL_VERSION}}"
   ROOT_DIR: ./
   PROJECTS_DIR: ./projects
