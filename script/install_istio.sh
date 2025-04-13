@@ -21,6 +21,7 @@ fi
 
 echo "Namespace is $NAMESPACE"
 kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
+echo "After label"
 
 if [[ -z "$DOMAIN" ]]; then
   echo "\$DOMAIN not set"
