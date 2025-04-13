@@ -21,16 +21,4 @@ runs:
         ozone-version: ${{ inputs.ozone_version }}
         kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
-    - name: Get version
-      if: inputs.is_release_version == 'true'
-      id: version
-      uses: ./.github/actions/get-version
-      with:
-        env: ${{ inputs.env }}
-
-    - name: "Ozone - Teardown non-release."
-      shell: bash
-      run: cd $GITHUB_WORKSPACE && ozone -d -c ${{ inputs.ozone_context }} run teardown
-      env:
-        GIT_BRANCH: ${{ github.head_ref }}
 

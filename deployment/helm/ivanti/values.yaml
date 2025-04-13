@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: nginx
+  repository: ivanti
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -18,7 +18,8 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations:
+    sidecar.istio.io/inject: "true"
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
@@ -41,27 +42,16 @@ service:
   port: 80
 
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: ivanti-registry.local
+    - host: chart-example.local
       paths:
         - path: /
           pathType: ImplementationSpecific
-      backend:
-        serviceName: ivanti-registry
-        servicePort: 80
-    - host: ivanti-api.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-      backend:
-        serviceName: ivanti-api
-        servicePort: 80
-
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -89,5 +79,4 @@ autoscaling:
 nodeSelector: {}
 
 tolerations: []
-
 affinity: {}

@@ -1,5 +1,11 @@
 # Setup
 
+## To add etc hosts
+
+```bash
+ozone -c pull-request run script/add_ip_to_hosts.sh
+```
+
 ## Env vars
 
 ```dotenv
@@ -12,4 +18,4 @@ Need to log into docker registry
 
 Example docker tag: `docker.io/ozone2021/ivt-api:test`
 
-main working
+main workding

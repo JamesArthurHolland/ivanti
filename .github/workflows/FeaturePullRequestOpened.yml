@@ -13,12 +13,13 @@ jobs:
     name: Build all
     uses: ./.github/workflows/build.yml
     secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
       ozone_context: pull-request
       env: "pr"
-      is_release_version: false
-      ozone_version: 1.4.33
+      ozone_version: 1.4.39
 
   deploy_all:
     name: Deploy all
@@ -26,30 +27,39 @@ jobs:
       - build_all
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GH_PAT }}
           submodules: recursive
           fetch-depth: 0
 
-      - uses: ./.github/workflows/build.yml
-        with:
-          ozone_context: pull-request
-          env: "pr"
-          is_release_version: false
-          ozone_version: 1.4.33
+#      - uses: ./.github/workflows/build.yml
+#        with:
+#          ozone_context: pull-request
+#          env: "pr"
+#          ozone_version: 1.4.39
 
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
-          ozone-version: 1.4.33
+          ozone-version: 1.4.39
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
 
       - name: "Ozone - Deploy Feature PR"
         shell: bash
-        run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run deploy-pr
+        run: export NAMESPACE=$(echo $GIT_BRANCH | awk -F'/' '{print $1}')  && cd "$GITHUB_WORKSPACE" && ozone -d -c pull-request run deploy-pr
         env:
-          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          GIT_BRANCH: ${{ github.head_ref }}
+          GIT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          CONTEXT: pull-request
+          DOCKER_REGISTRY: ozone2021
+          DOMAIN: "ivanti.com"
+          ENV: "pr"
+
 
   tests:
     name: Postman e2e Tests
@@ -59,15 +69,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.2
         with:
+          token: ${{ secrets.GH_PAT }}
           submodules: recursive
           fetch-depth: 0
       - name: Install deps
         uses: ./.github/actions/install-e2e-test-deps
         with:
-          ozone-version: 1.2.34
+          ozone-version: 1.4.39
+
       - name: "Ozone - Postman tests"
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run postman-tests
         env:
           GIT_BRANCH: ${{ github.head_ref }}
-          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}

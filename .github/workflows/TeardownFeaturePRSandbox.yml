@@ -12,10 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.2
         with:
+          token: ${{ secrets.GH_PAT }}
           submodules: recursive
           fetch-depth: 0
       - uses: ./.github/actions/ozone_teardown
         with:
           env: "pr"
           ozone_context: pull-request
-          ozone_version: 1.4.33
+          ozone_version: 1.4.39

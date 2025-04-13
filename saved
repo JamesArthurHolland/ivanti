@@ -1,0 +1,8 @@
+  - name: ns_git_branch_suffix
+    include:
+      - name: env/git_branch_release_version
+        type: builtin
+        with_vars:
+          DOMAIN: "{{DOMAIN}}"
+#          GIT_BRANCH: "{{GIT_BRANCH}}"
+TODO delete
