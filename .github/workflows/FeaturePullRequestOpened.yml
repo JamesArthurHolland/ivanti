@@ -33,11 +33,11 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - uses: ./.github/workflows/build.yml
-        with:
-          ozone_context: pull-request
-          env: "pr"
-          ozone_version: 1.4.33
+#      - uses: ./.github/workflows/build.yml
+#        with:
+#          ozone_context: pull-request
+#          env: "pr"
+#          ozone_version: 1.4.33
 
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
