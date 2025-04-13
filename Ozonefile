@@ -59,8 +59,8 @@ environments:
 
   - name: host_dynamic
     with_vars:
-      API_HOST: "api.{{DOMAIN}}"
-      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
+      API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
+      HELM_INSTALL_NAME: "{{NAMESPACE}}"
 
   - name: version-1
     for: service:services
@@ -104,9 +104,23 @@ environments:
           DOMAIN: "{{DOMAIN}}"
           GIT_BRANCH: "{{GIT_BRANCH}}"
 
+  - name: all-docker-tags-dynamic
+    for: SERVICE:services
+    include:
+      - name: env/git_log_hash
+        type: builtin
+        input_vars:
+          GIT_DIR: "{{{{SERVICE | upper}}_DIR}}"
+          GIT_SOURCE_FILES:
+            - "{{{{SERVICE | upper}}_SOURCE_FILES}}"
+    with_vars:
+      "{{SERVICE | upper}}_FULL_TAG": "{{DOCKER_REGISTRY}}/{{SERVICE}}:{{GIT_LOG_HASH}}"
+      "{{SERVICE | upper}}_FULL_TAG_PRODUCT_VERSION": "{{LIVE_DOCKER_REGISTRY}}/{{SERVICE}}:{{PRODUCT_OVERALL_VERSION}}"
+      "{{SERVICE | upper}}_SHORT_TAG": "{{GIT_LOG_HASH}}"
+
   - name: ns_static
     with_vars:
-      HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
+      HELM_INSTALL_NAME: "ivanti2-{{NAMESPACE}}"
       UI_HOST: "{{DOMAIN}}"
 
   - name: short-tag-dynamic
