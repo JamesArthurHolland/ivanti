@@ -14,7 +14,7 @@ jobs:
       ozone_context: dev
       env: "dev"
       github_username: vessul-cicd
-      ozone_version: 1.4.33
+      ozone_version: 1.4.36
 
   retag_all:
     name: Tag all submodules with the parent semantic tag.
@@ -29,7 +29,7 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
       env: "dev"
-      ozone_version: 1.4.33
+      ozone_version: 1.4.36
 
   deploy_all:
     name: Deploy all
@@ -46,7 +46,7 @@ jobs:
       - name: Install deps
         uses: ./.github/actions/install-deploy-deps
         with:
-          ozone-version: 1.4.33
+          ozone-version: 1.4.36
           kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
 
 
