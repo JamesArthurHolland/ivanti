@@ -14,29 +14,26 @@ istioctl install -y
 
 echo "After istioctl"
 
-if [[ "$SSL_ENABLED" == "true" ]]; then
-  echo "Installing istio with SSL enabled"
-
-  kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
+echo "Namespace is $NAMESPACE"
+kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
 
 
-  if [[ -z "$DOMAIN" ]]; then
-    echo "\$DOMAIN not set"
-    exit 3
-  fi
+if [[ -z "$DOMAIN" ]]; then
+  echo "\$DOMAIN not set"
+  exit 3
+fi
 
-  if [[ -z "$ENV" ]]; then
-    echo "\$ENV not set"
-    exit 3
-  fi
 
-# TODO double check "allowedRoutes" below https://www.danielstechblog.io/configuring-istio-using-the-kubernetes-gateway-api/
+if [[ -z "$ENV" ]]; then
+  echo "\$ENV not set"
+  exit 3
+fi
 
 kubectl apply -f - <<END
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: docker-registry-ivanti-gateway-local
+  name: docker-registry-ivanti-gateway
   namespace: istio-system
 spec:
   selector:
@@ -49,5 +46,7 @@ spec:
       hosts:
         - "*.$DOMAIN"
         - "$DOMAIN"
+        - *.ivanti.test
 END
-fi
+
+

@@ -28,6 +28,7 @@ jobs:
       - uses: actions/checkout@v3.5.2
         with:
           submodules: recursive
+          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
 
       - uses: ./.github/workflows/build.yml
@@ -57,4 +58,11 @@ jobs:
         shell: bash
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
         env:
+          GIT_BRANCH: ${{ github.head_ref }}
+
+      - name: "Deploy"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run deploy-prod
+        env:
+          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           GIT_BRANCH: ${{ github.head_ref }}

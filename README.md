@@ -1,5 +1,11 @@
 # Setup
 
+## To add etc hosts
+
+```bash
+ozone -c pull-request run script/add_ip_to_hosts.sh
+```
+
 ## Env vars
 
 ```dotenv
