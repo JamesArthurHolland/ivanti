@@ -13,7 +13,6 @@ build_vars:
   LIVE_CONTEXT: 'live'
   HOME: "{{HOME}}"
   CONTAINER_DB_CONTEXTS: 'local|pull-request'
-=
   NONLIVE_CONTEXTS: 'pull-request|dev'
   NS_CONTEXTS: 'pull-request|dev|live'
   DOMAIN: '{{DOMAIN | default_if_none:"ivanti.local"}}'
