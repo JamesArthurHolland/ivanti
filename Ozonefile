@@ -40,7 +40,7 @@ environments:
     with_vars:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
-      NAMESPACE: "ivanti"
+      NAMESPACE: "local"
       API_HOST: 'api.ivanti.local'
       API_FULL_TAG: "{{DOCKER_REGISTRY}}/api:latest"
       KUBECONFIG: '{{HOME}}/.kube/config'
@@ -49,7 +49,6 @@ environments:
     with_vars:
       SUBDOMAIN: ""
       HELM_INSTALL_NAME: "ivanti"
-      NAMESPACE: "ivanti"
       API_HOST: 'api.ivanti.com'
       KUBECONFIG: '{{HOME}}/.kube/config'
 
@@ -59,7 +58,7 @@ environments:
 
   - name: host_dynamic
     with_vars:
-      API_HOST: "{{NAMESPACE}}-api.{{DOMAIN}}"
+      API_HOST: "api.{{DOMAIN}}"
       HELM_INSTALL_NAME: "ivanti-{{NAMESPACE}}"
 
   - name: version-1
