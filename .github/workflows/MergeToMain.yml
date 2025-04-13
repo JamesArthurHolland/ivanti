@@ -18,7 +18,6 @@ jobs:
       GH_PAT: ${{ secrets.GH_PAT }}
     with:
       ozone_context: live
-      service_name: api
       env: "pr"
       ozone_version: 1.4.39
 
