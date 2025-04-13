@@ -14,9 +14,18 @@ istioctl install -y
 
 echo "After istioctl"
 
-echo "Namespace is $NAMESPACE"
-kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
+#echo "Namespace is $NAMESPACE"
+#kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
 
+# Create the YAML file
+cat <<EOF > test.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    istio-injection: enabled
+EOF
 
 if [[ -z "$DOMAIN" ]]; then
   echo "\$DOMAIN not set"
