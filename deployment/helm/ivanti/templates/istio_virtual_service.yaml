@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .Values.namespace }}.{{ .Values.domain }}
+  name: api-virtual-service
 spec:
   hosts:
     - {{ .Values.services.api.host }}
@@ -10,6 +10,6 @@ spec:
   http:
     - route:
         - destination:
-            host: ivanti-api.{{ .Values.namespace }}.svc.cluster.local
+            host: ivanti-live.{{ .Values.namespace }}.svc.cluster.local
             port:
               number: 80
