@@ -5,9 +5,7 @@ context:
     list:
       - local
       - pull-request
-      - release-pr
       - dev
-      - staging
       - live
 
 build_vars:

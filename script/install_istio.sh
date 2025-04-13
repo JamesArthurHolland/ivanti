@@ -20,8 +20,6 @@ if [[ "$SSL_ENABLED" == "true" ]]; then
   kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
 
 
-  SECRET_NAME=ingress-cert-$ENV
-
   if [[ -z "$DOMAIN" ]]; then
     echo "\$DOMAIN not set"
     exit 3
@@ -53,18 +51,3 @@ spec:
         - "$DOMAIN"
 END
 fi
-
-
-echo "Installing istio access logging"
-
-kubectl apply -f - <<END
-apiVersion: telemetry.istio.io/v1alpha1
-kind: Telemetry
-metadata:
-  name: mesh-default
-  namespace: istio-system
-spec:
-  accessLogging:
-    - providers:
-      - name: envoy
-END

@@ -70,4 +70,3 @@ jobs:
         run: cd $GITHUB_WORKSPACE && ozone -d -c pull-request run postman-tests
         env:
           GIT_BRANCH: ${{ github.head_ref }}
-          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN_BUILD_PR }}
