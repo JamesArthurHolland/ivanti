@@ -54,4 +54,6 @@ spec:
         - *.ivanti.test
 END
 
+echo "Istio installed"
+
 
