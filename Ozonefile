@@ -111,7 +111,6 @@ environments:
       - name: host_dynamic
     with_vars:
       ISTIO_HELM_ARGS: "-f ./deployment/helm/ivanti/value.yamll"
-      NAMESPACE: "{{GIT_BRANCH}}"
       ENV: "pull-request"
 
   - name: dev

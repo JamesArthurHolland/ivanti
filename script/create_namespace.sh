@@ -1,5 +1,6 @@
 #!/bin/bash
 
+NAMESPACE=$(echo $NAMESPACE | awk -F'/' '{print $1}')
 echo "Creating namespace $NAMESPACE..."
 
 if [ -n "$NAMESPACE" ]; then
