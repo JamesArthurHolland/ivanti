@@ -22,7 +22,7 @@ kubectl apply -f - <<END
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: docker-registry-ivanti-gateway-local
+  name: docker-registry-ivanti-gateway
   namespace: istio-system
 spec:
   selector:
@@ -46,7 +46,7 @@ spec:
   hosts:
     - ivanti.test
   gateways:
-    - istio-system/docker-registry-ivanti-gateway-local
+    - istio-system/docker-registry-ivanti-gateway
   http:
     - route:
         - destination:

@@ -1,4 +1,4 @@
-#!/bin/bash
+ozone -d -c pull-request run deploy-pr#!/bin/bash
 
 utils_dir="$( dirname -- "$BASH_SOURCE"; )"
 
