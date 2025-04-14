@@ -6,8 +6,9 @@ if [[ -z "$DOCKER_PASSWORD" ]]; then
 fi
 
 check_docker_tag() {
-    IMAGE_NAME=$1
-    TAG_NAME=$2
+    IFS=':' read -r IMAGE_NAME TAG_NAME <<< "$DOCKER_FULL_TAG"
+
+    echo "Checking if tag '$TAG_NAME' exists for image '$IMAGE_NAME'..."
 
     # Docker Hub API URL
     URL="https://hub.docker.com/v2/repositories/ozone2021/api/tags/"
@@ -22,11 +23,4 @@ check_docker_tag() {
     fi
 }
 
-# Check if the correct number of arguments is provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <image-name> <tag-name>"
-    exit 3
-fi
-
-# Call the function with arguments
-check_docker_tag "$1" "$2"
+check_docker_tag
