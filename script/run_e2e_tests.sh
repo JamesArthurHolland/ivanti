@@ -1,8 +1,5 @@
 #!/bin/bash
 
-exit 0
-echo TODO
-
 echo "---                   ---"
 echo "--- Postman e2e tests ---"
 echo "---                   ---"
@@ -12,13 +9,14 @@ if [[ -z "$API_HOST" ]]; then
   exit 3
 fi
 
-set -e
+NEWMAN_RESULT=$(newman run --verbose $ROOT_DIR/tests/postman/run/e2e-tests.postman_collection.json \
+  --env-var "endpoint=$API_HOST")
 
-source $(dirname "$0")/vars/vars.sh
-
-
-newman run --verbose $ROOT_DIR/tests/postman/run/e2e-tests.postman_collection.json \
-  --env-var "endpoint=$API_HOST"
-
-# TODO set timeout for crewchange tests to stop infinite loop.
+# Check if there are any test failures in the Newman result
+if echo "$NEWMAN_RESULT" | grep -q "failures="; then
+  echo "Tests failed."
+  exit 1  # Exit with a non-zero status to indicate failure
+else
+  echo "Tests passed."
+fi
 
