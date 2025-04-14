@@ -8,7 +8,7 @@ echo "-----------------------------------------------"
 echo "---          Installing istio               ---"
 echo "-----------------------------------------------"
 
-kubectl apply -f deployment/istio/standard-install.yaml --validate=false
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.1/standard-install.yaml --validate=false
 
 istioctl install -y
 
