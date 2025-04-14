@@ -29,6 +29,11 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           submodules: recursive
           fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          ozone-version: 1.4.39
+          kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
