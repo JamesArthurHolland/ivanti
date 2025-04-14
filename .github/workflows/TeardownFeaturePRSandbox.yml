@@ -4,9 +4,6 @@ on:
     types:
       - closed
     branches:
-      - 'feature/*'
-      - 'feat*/*'
-      - 'feat*'
       - 'main'
 
 jobs:
@@ -24,3 +21,4 @@ jobs:
           env: "pr"
           ozone_context: pull-request
           ozone_version: 1.4.39
+          lke_creds_base64: ${{ secrets.LKE_CREDS_BASE64 }}

@@ -10,6 +10,9 @@ inputs:
   ozone_version:
     description: 'Ozone version'
     required: true
+  lke_creds_base64:
+    description: 'LKE creds base64'
+    required: true
 
 runs:
   using: "composite"
@@ -19,7 +22,7 @@ runs:
       uses: ./.github/actions/install-deploy-deps
       with:
         ozone-version: ${{ inputs.ozone_version }}
-        kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
+        kube_config: ${{ inputs.lke_creds_base64 }}
 
     - name: "Ozone - Teardown non-release."
       shell: bash
