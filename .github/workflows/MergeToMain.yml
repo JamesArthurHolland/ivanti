@@ -16,6 +16,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}
+      LKE_CREDS_BASE64: ${{ secrets.LKE_CREDS_BASE64 }}
     with:
       ozone_context: live
       env: "live"
