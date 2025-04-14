@@ -1,15 +1,14 @@
 #!/bin/bash
 
-
 check_docker_tag() {
     IMAGE_NAME=$1
     TAG_NAME=$2
 
     # Docker Hub API URL
-    URL="https://registry.hub.docker.com/v2/repositories/$IMAGE_NAME/tags/"
+    URL="https://hub.docker.com/v2/repositories/ozone2021/api/tags/"
 
     # Check if the tag exists
-    if curl -s "$URL" | grep -q "\"name\":\"$TAG_NAME\""; then
+    if curl -X GET -H "Authorization: Bearer dckr_pat_Wg5wkmThOwxGhdgiw5pQba7JMS4" "$URL" | grep -q "\"name\":\"$TAG_NAME\""; then
         echo "Tag '$TAG_NAME' exists for image '$IMAGE_NAME'."
         return 0
     else
