@@ -18,6 +18,8 @@ on:
         required: true
       GH_PAT:
         required: true
+      LKE_CREDS_BASE64:
+        required: true
 
 jobs:
   build_api:
