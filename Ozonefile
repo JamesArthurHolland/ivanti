@@ -169,7 +169,6 @@ pre_utilities:
 
   - name: install-infrastructure-dependencies
     depends_on:
-      - name: install-deploy-deps
       - name: create-namespace
       - name: install-istio
 #      - name: add-ip-to-hosts
