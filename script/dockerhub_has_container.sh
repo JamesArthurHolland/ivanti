@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -z "$DOCKER_PASSWORD" ]]; then
+  echo "\$DOCKER_PASSWORD not set"
+  exit 3
+fi
+
 check_docker_tag() {
     IMAGE_NAME=$1
     TAG_NAME=$2
@@ -8,7 +13,7 @@ check_docker_tag() {
     URL="https://hub.docker.com/v2/repositories/ozone2021/api/tags/"
 
     # Check if the tag exists
-    if curl -X GET -H "Authorization: Bearer dckr_pat_Wg5wkmThOwxGhdgiw5pQba7JMS4" "$URL" | grep -q "\"name\":\"$TAG_NAME\""; then
+    if curl -X GET -H "Authorization: Bearer $DOCKER_PASSWORD" "$URL" | grep -q "\"name\":\"$TAG_NAME\""; then
         echo "Tag '$TAG_NAME' exists for image '$IMAGE_NAME'."
         return 0
     else
