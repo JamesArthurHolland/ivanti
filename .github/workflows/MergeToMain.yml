@@ -59,3 +59,25 @@ jobs:
         run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
         env:
           GIT_BRANCH: ${{ github.head_ref }}
+
+  tests:
+    name: Postman e2e Tests
+    needs:
+      - deploy_all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+        with:
+          token: ${{ secrets.GH_PAT }}
+          submodules: recursive
+          fetch-depth: 0
+      - name: Install deps
+        uses: ./.github/actions/install-e2e-test-deps
+        with:
+          ozone-version: 1.4.39
+
+      - name: "Ozone - Postman tests"
+        shell: bash
+        run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
+        env:
+          GIT_BRANCH: ${{ github.head_ref }}
