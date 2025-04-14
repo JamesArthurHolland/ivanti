@@ -49,3 +49,4 @@ runs:
         GIT_BRANCH: ${{ github.head_ref }}
         DOCKER_BUILDKIT: "1"
         DOCKER_REGISTRY: ${{ inputs.docker_registry }}
+        DOCKER_PASSWORD: ${{ inputs.docker_password }}

@@ -176,6 +176,8 @@ builds:
           - short-tag-dynamic
     context_conditionals:
       - context: "{{NS_CONTEXTS}}"
+        when_not_script:
+          - script/dockerhub_has_container.sh
     context_steps:
       - context: "{{CONTEXT}}"
         steps:
