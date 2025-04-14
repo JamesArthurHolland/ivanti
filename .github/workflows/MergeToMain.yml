@@ -54,12 +54,6 @@ jobs:
           GIT_BRANCH: ${{ github.head_ref }}
           ENV: "live"
 
-      - name: "Ozone - Postman tests"
-        shell: bash
-        run: cd $GITHUB_WORKSPACE && ozone -d -c live run postman-tests
-        env:
-          GIT_BRANCH: ${{ github.head_ref }}
-
   tests:
     name: Postman e2e Tests
     needs:
