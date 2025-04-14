@@ -19,7 +19,7 @@ check_docker_tag() {
         return 0
     else
         echo "Tag '$TAG_NAME' does not exist for image '$IMAGE_NAME'."
-        return 3
+        return 1
     fi
 }
 
