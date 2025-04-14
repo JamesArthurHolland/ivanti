@@ -161,8 +161,15 @@ pre_utilities:
             with_vars:
               SCRIPT: script/install_istio.sh
 
+  - name: Install deps
+    uses: ./.github/actions/install-deploy-deps
+    with:
+      ozone-version: 1.4.39
+      kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
+
   - name: install-infrastructure-dependencies
     depends_on:
+      - name: install-deploy-deps
       - name: create-namespace
       - name: install-istio
 #      - name: add-ip-to-hosts
