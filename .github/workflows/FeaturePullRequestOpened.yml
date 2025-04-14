@@ -40,6 +40,12 @@ jobs:
 #          env: "pr"
 #          ozone_version: 1.4.39
 
+      - name: Install deps
+        uses: ./.github/actions/install-deploy-deps
+        with:
+          ozone-version: 1.4.39
+          kube_config: ${{ secrets.LKE_CREDS_BASE64 }}
+
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
@@ -54,7 +60,6 @@ jobs:
           DOCKER_REGISTRY: ivanti
           DOMAIN: "ivanti.com"
           ENV: "pr"
-
 
   tests:
     name: Postman e2e Tests
