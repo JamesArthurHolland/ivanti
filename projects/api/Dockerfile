@@ -25,25 +25,7 @@ RUN CGO_ENABLED=0 go build -o "/var/api"
 # expose initial ports
 EXPOSE 3002
 
-# --- production stage ---
-# https://hub.docker.com/_/alpine/
-FROM alpine:${ALPINE_VERSION} AS production
 
-ARG SERVICE_NAME
-
-RUN apk --update add ca-certificates tzdata
-
-# copy the built binary from the build process.
-COPY --from=build "/var/api" "/api"
-
-# set the work directory.
-WORKDIR /var
-
-# run the binary.
-CMD "./api"
-
-# --- development stage ---
-# https://hub.docker.com/_/golang/
 FROM alpine:${ALPINE_VERSION} AS development
 
 RUN apk update && apk add bash postgresql-client
