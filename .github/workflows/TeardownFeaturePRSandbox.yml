@@ -4,8 +4,9 @@ on:
     types:
       - closed
     branches:
-      - 'feature/**'
-      - 'feat**'
+      - 'feature/*'
+      - 'feat*/*'
+      - 'feat*'
 
 jobs:
   merge_pr:
