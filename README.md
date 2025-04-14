@@ -29,18 +29,22 @@ I used Github Actions in tandem with my own open source project Ozone to create 
 
 When a PR is opened, a workflow builds all the docker images and deploys these to a sandbox in a kubernetes namespace.
 
-This style of work negates the need for a large amount of environments and is in my opinion, the epitome of the DevOps mentality.
+When the PR is merged, the sandbox is deleted, and the images are built again in the main branch.
 
-There is no silosation of dev, qa, staging and prod. There is only one environment, and that is the sandbox. 
+This style of work negates the need for a large amount of environments and is in my opinion, is the essence of devops.
+
+There is no siloisation of dev, qa, staging and prod. There is only one environment, and that is the sandbox. The sandbox allows
+all teams to work together, and the work can be tested with all eyes on the code.
 
 Too many times, I've witnessed backend developers write code, while frontend developers are working on other functionality, and when
 it comes time for the frontend developers to work on the new backend code, they find issues with it. QA aren't the only people that
-find issues with requirements. This can cause serious problems if there has been lots of code merged since the backend code was written.
+find issues with code. This can cause serious problems if there has been lots of code merged since the backend code was written, as if it 
+is a breaking change, it can be difficult to revert the code.
 
-It also slows down development because the backend developers have to context switch back and try remember what it was that they were doing.
+It also slows down development because the backend developers have to context switch back and try to remember what it was that they were doing.
 
 With sandboxes, the PR can remain open and it makes it very easy for cross team collaboration, and if there is a time delay between frontend
-catching up to do their part of the work, the backend code is there in a PR, so they can easily read the code and understand what it is doing.
+catching up to do their part of the work, the backend code is there in a PR, so the backend devs can easily read the PR and understand what it is they were doing.
 
 This also makes it easy for QA to test the code before it gets merged. There is also a simple end to end test that runs as part of the sandbox, as a proof
 of concept of how this can be expanded upon by developers and QA. Testing is everyone's responsibility.
@@ -49,7 +53,7 @@ When the PR is merged, a workflow is started in which the sandbox is deleted. Th
 
 ### Cost savings
 
-The cost of running a sandbox is much cheaper than running multiple environments. The sandboxes can run in the same kubernetes cluster as the development
+The cost of running a sandbox is much cheaper than running multiple environments as sandboxes are ephemeral. The sandboxes can run in the same kubernetes cluster as the development
 cluster. If there is going to be a long time before the frontend team can catch up, the sandbox can be manually deleted and recreated when the frontend team is ready to work on it.
 
 ## CI/CD process 
