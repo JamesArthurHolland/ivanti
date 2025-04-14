@@ -1,6 +1,6 @@
 name: Feature Pull Request Closed/Merged
 on:
-  pull_request_target:
+  pull_request:
     types:
       - closed
     branches:
